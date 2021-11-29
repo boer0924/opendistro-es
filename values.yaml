@@ -143,7 +143,11 @@ kibana:
   ## Tolerations for pod assignment
   ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
   ##
-  tolerations: []
+  tolerations:
+    - key: "dedicated"
+      operator: "Equal"
+      value: "middleware"
+      effect: "NoSchedule"
 
   affinity: {}
 
@@ -432,10 +436,10 @@ elasticsearch:
       ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
       ##   GKE, AWS & OpenStack)
       ##
-      storageClass: "cbs-csi"
+      storageClass: "managed-nfs-storage"
       accessModes:
         - ReadWriteOnce
-      size: 8Gi
+      size: 10Gi
       annotations: {}
 
     resources: {}
@@ -457,7 +461,11 @@ elasticsearch:
       periodSeconds: 10
     startupProbe: []
     nodeSelector: {}
-    tolerations: []
+    tolerations:
+      - key: "dedicated"
+        operator: "Equal"
+        value: "middleware"
+        effect: "NoSchedule"
     ## Anti-affinity to disallow deploying client and master nodes on the same worker node
     affinity: {}
     #  podAntiAffinity:
@@ -534,7 +542,11 @@ elasticsearch:
       periodSeconds: 10
     startupProbe: []
     nodeSelector: {}
-    tolerations: []
+    tolerations:
+      - key: "dedicated"
+        operator: "Equal"
+        value: "middleware"
+        effect: "NoSchedule"
     ## Anti-affinity to disallow deploying client and master nodes on the same worker node
     affinity: {}
     #  podAntiAffinity:
@@ -606,7 +618,11 @@ elasticsearch:
       periodSeconds: 10
     startupProbe: []
     nodeSelector: {}
-    tolerations: []
+    tolerations:
+      - key: "dedicated"
+        operator: "Equal"
+        value: "middleware"
+        effect: "NoSchedule"
     ## Weighted anti-affinity to disallow deploying client node to the same worker node as master node
     affinity: {}
     #  podAntiAffinity:
@@ -619,7 +635,7 @@ elasticsearch:
     #              role: client
     podAnnotations: {}
 
-  config: |
+  config:
     cluster:
       name: ${CLUSTER_NAME}
     node:
@@ -708,7 +724,7 @@ elasticsearch:
     # opendistro_security.ssl.http.pemcert_filepath: elk-rest-crt.pem
     # opendistro_security.ssl.http.pemkey_filepath: elk-rest-key.pem
     # opendistro_security.ssl.http.pemtrustedcas_filepath: elk-rest-root-ca.pem
-
+  
   log4jConfig: ""
 
   loggingConfig:

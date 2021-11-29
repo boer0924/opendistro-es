@@ -269,17 +269,20 @@ spec:
       {{- if .Values.elasticsearch.ssl.transport.existingCertSecret }}
       - name: transport-certs
         secret:
-          secretName: {{ .Values.elasticsearch.ssl.transport.existingCertSecret }}
+          # secretName: {{ .Values.elasticsearch.ssl.transport.existingCertSecret }}
+          secretName: {{ template "opendistro-es.fullname" . }}-es-tls
       {{- end }}
       {{- if and .Values.elasticsearch.ssl.rest.enabled .Values.elasticsearch.ssl.rest.existingCertSecret }}
       - name: rest-certs
         secret:
-          secretName: {{ .Values.elasticsearch.ssl.rest.existingCertSecret }}
+          # secretName: {{ .Values.elasticsearch.ssl.rest.existingCertSecret }}
+          secretName: {{ template "opendistro-es.fullname" . }}-es-tls
       {{- end }}
       {{- if and .Values.elasticsearch.ssl.admin.enabled .Values.elasticsearch.ssl.admin.existingCertSecret }}
       - name: admin-certs
         secret:
-          secretName: {{ .Values.elasticsearch.ssl.admin.existingCertSecret }}
+          # secretName: {{ .Values.elasticsearch.ssl.admin.existingCertSecret }}
+          secretName: {{ template "opendistro-es.fullname" . }}-es-tls
       {{- end }}
       {{- if and .Values.elasticsearch.securityConfig.config.securityConfigSecret .Values.elasticsearch.securityConfig.config.data }}
       - name: security-config
