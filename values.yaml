@@ -262,7 +262,7 @@ elasticsearch:
   ssl:
     enabled: true
     data:
-      root-ca.pem: |
+      es-root-ca.pem: |
         -----BEGIN CERTIFICATE-----
         MIIDuTCCAqGgAwIBAgIJAP5t3QcZermfMA0GCSqGSIb3DQEBCwUAMHIxCzAJBgNV
         BAYTAmNuMQswCQYDVQQIDAJjcTELMAkGA1UEBwwCY3ExDjAMBgNVBAoMBWdlZWdh
@@ -387,26 +387,26 @@ elasticsearch:
         -----END PRIVATE KEY-----
     ## TLS is mandatory for the transport layer and can not be disabled
     transport:
-      existingCertSecret: es-tls
+      existingCertSecret: true
       existingCertSecretCertSubPath: node.pem
       existingCertSecretKeySubPath: node-key.pem
-      existingCertSecretRootCASubPath: root-ca.pem
+      existingCertSecretRootCASubPath: node-root-ca.pem
     rest:
       enabled: false
-      existingCertSecret: es-tls
+      existingCertSecret: false
       existingCertSecretCertSubPath: elk-rest-crt.pem
       existingCertSecretKeySubPath: elk-rest-key.pem
       existingCertSecretRootCASubPath: elk-rest-root-ca.pem
     admin:
       enabled: true
-      existingCertSecret: es-tls
+      existingCertSecret: true
       existingCertSecretCertSubPath: admin.pem
       existingCertSecretKeySubPath: admin-key.pem
-      existingCertSecretRootCASubPath: root-ca.pem
+      existingCertSecretRootCASubPath: admin-root-ca.pem
 
   master:
     enabled: true
-    replicas: 1
+    replicas: 3
     updateStrategy: "RollingUpdate"
 
     ## Enable persistence using Persistent Volume Claims
@@ -432,7 +432,7 @@ elasticsearch:
       ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
       ##   GKE, AWS & OpenStack)
       ##
-      # storageClass: "-"
+      storageClass: "cbs-csi"
       accessModes:
         - ReadWriteOnce
       size: 8Gi
@@ -639,12 +639,12 @@ elasticsearch:
     cluster.initial_master_nodes: ${DISCOVERY_SERVICE}
     opendistro_security.ssl.transport.pemcert_filepath: node.pem
     opendistro_security.ssl.transport.pemkey_filepath: node-key.pem
-    opendistro_security.ssl.transport.pemtrustedcas_filepath: root-ca.pem
+    opendistro_security.ssl.transport.pemtrustedcas_filepath: node-root-ca.pem
     opendistro_security.ssl.transport.enforce_hostname_verification: false
     opendistro_security.ssl.http.enabled: false
     opendistro_security.ssl.http.pemcert_filepath: node.pem
     opendistro_security.ssl.http.pemkey_filepath: node-key.pem
-    opendistro_security.ssl.http.pemtrustedcas_filepath: root-ca.pem
+    opendistro_security.ssl.http.pemtrustedcas_filepath: node-root-ca.pem
     # opendistro_security.allow_unsafe_democertificates: false
     # opendistro_security.allow_default_init_securityindex: false
     opendistro_security.authcz.admin_dn:

@@ -194,7 +194,7 @@ spec:
         - mountPath: {{ .Values.elasticsearch.configDirectory }}/node-key.pem
           name: transport-certs
           subPath: {{ .Values.elasticsearch.ssl.transport.existingCertSecretKeySubPath }}
-        - mountPath: {{ .Values.elasticsearch.configDirectory }}/root-ca.pem
+        - mountPath: {{ .Values.elasticsearch.configDirectory }}/node-root-ca.pem
           name: transport-certs
           subPath: {{ .Values.elasticsearch.ssl.transport.existingCertSecretRootCASubPath }}
         {{- end }}
@@ -216,7 +216,7 @@ spec:
         - mountPath: {{ .Values.elasticsearch.configDirectory }}/admin-key.pem
           name: admin-certs
           subPath: {{ .Values.elasticsearch.ssl.admin.existingCertSecretKeySubPath }}
-        - mountPath: {{ .Values.elasticsearch.configDirectory }}/root-ca.pem
+        - mountPath: {{ .Values.elasticsearch.configDirectory }}/admin-root-ca.pem
           name: admin-certs
           subPath: {{ .Values.elasticsearch.ssl.admin.existingCertSecretRootCASubPath }}
         {{- end }}
