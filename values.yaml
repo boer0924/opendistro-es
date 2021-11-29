@@ -1,0 +1,758 @@
+# Copyright 2019 Viasat, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License").
+# You may not use this file except in compliance with the License.
+# A copy of the License is located at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# or in the "license" file accompanying this file. This file is distributed
+# on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+# express or implied. See the License for the specific language governing
+# permissions and limitations under the License.
+
+kibana:
+  enabled: true
+  image: amazon/opendistro-for-elasticsearch-kibana
+  imageTag: 1.13.2
+  ## Specifies the image pull policy. Can be "Always" or "IfNotPresent" or "Never".
+  ## Default to "Always".
+  imagePullPolicy: "IfNotPresent"
+  replicas: 1
+  port: 5601
+  # externalPort: 443
+  externalPort: 5601
+  resources: {}
+  #  limits:
+  #    cpu: 2500m
+  #    memory: 2Gi
+  #  requests:
+  #    cpu: 500m
+  #    memory: 512Mi
+  readinessProbe: []
+  livenessProbe: []
+  startupProbe: []
+
+  elasticsearchAccount:
+    secret: ""
+    keyPassphrase:
+      enabled: false
+
+  extraEnvs: []
+
+  extraVolumes: []
+  # - name: extras
+  #   emptyDir: {}
+
+  extraVolumeMounts: []
+  # - name: extras
+  #   mountPath: /usr/share/extras
+  #   readOnly: true
+
+  extraInitContainers: []
+  # - name: do-something
+  #   image: busybox
+  #   command: ['do', 'something']
+
+  extraContainers: []
+  # - name: do-something
+  #   image: busybox
+  #   command: ['do', 'something']
+
+  ssl:
+    kibana:
+      enabled: false
+      existingCertSecret:
+      existingCertSecretCertSubPath: kibana-crt.pem
+      existingCertSecretKeySubPath: kibana-key.pem
+      existingCertSecretRootCASubPath: kibana-root-ca.pem
+    elasticsearch:
+      enabled: false
+      existingCertSecret:
+      existingCertSecretCertSubPath: elk-rest-crt.pem
+      existingCertSecretKeySubPath: elk-rest-key.pem
+      existingCertSecretRootCASubPath: elk-rest-root-ca.pem
+
+
+
+  configDirectory: "/usr/share/kibana/config"
+  certsDirectory: "/usr/share/kibana/certs"
+
+  ingress:
+    ## Set to true to enable ingress record generation
+    enabled: false
+    annotations: {}
+    #  kubernetes.io/ingress.class: nginx
+    #  kubernetes.io/tls-acme: "true"
+    labels: {}
+    path: /
+    hosts:
+      - chart-example.local
+    tls: []
+    #  - secretName: chart-example-tls
+    #    hosts:
+    #      - chart-example.local
+
+  service:
+    type: ClusterIP
+    annotations: {}
+
+  config: |
+    # https://www.elastic.co/guide/en/kibana/7.10/settings.html
+    server.host: 0.0.0.0
+    server.port: 5601
+    elasticsearch.hosts: http://localhost:9200
+    elasticsearch.ssl.verificationMode: none
+    elasticsearch.username: kibanaserver
+    elasticsearch.password: Kibana@123
+    elasticsearch.requestTimeout: 30000
+    elasticsearch.requestHeadersWhitelist: ["securitytenant","Authorization"]
+    opendistro_security.multitenancy.enabled: true
+    opendistro_security.multitenancy.tenants.preferred: ["Private", "Global"]
+    opendistro_security.readonly_mode.roles: ["kibana_read_only"]
+    opendistro_security.cookie.secure: false
+    newsfeed.enabled: false
+    telemetry.optIn: false
+    telemetry.enabled: false
+    security.showInsecureClusterWarning: false
+    map.includeElasticMapsService: false
+    ## Default Kibana configuration from kibana-docker.
+    # server.name: kibana
+    # server.host: "0"
+
+    ## Replace with Elasticsearch DNS name picked during Service deployment
+    # elasticsearch.hosts: ${ELASTIC_URL}
+    # elasticsearch.requestTimeout: 360000
+
+    ## Kibana TLS Config
+    # server.ssl.enabled: true
+    # server.ssl.key: /usr/share/kibana/certs/kibana-key.pem
+    # server.ssl.certificate: /usr/share/kibana/certs/kibana-crt.pem
+    # elasticsearch.ssl.certificateAuthorities: /usr/share/kibana/certs/kibana-root-ca.pem
+
+    # opendistro_security.cookie.secure: true
+    # opendistro_security.cookie.password: ${COOKIE_PASS}
+
+
+
+  ## Node labels for pod assignment
+  ## ref: https://kubernetes.io/docs/user-guide/node-selection/
+  #
+  nodeSelector: {}
+
+  ## Tolerations for pod assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+  ##
+  tolerations: []
+
+  affinity: {}
+
+  serviceAccount:
+    ## Specifies whether a ServiceAccount should be created
+    create: true
+    ## The name of the ServiceAccount to use.
+    ## If not set and create is true, a name is generated using the fullname template
+    name:
+
+  podAnnotations: {}
+
+
+global:
+  clusterName: elasticsearch
+
+  psp:
+    create: true
+
+  rbac:
+    enabled: true
+
+  # Optionally override the docker registry to use for images
+  imageRegistry: docker.io
+
+  ## Optionally specify an array of imagePullSecrets.
+  ## Secrets must be manually created in the namespace.
+  # imagePullSecrets:
+  #   - myRegistryKeySecretName
+
+
+elasticsearch:
+  ## Used when deploying hot/warm architecture. Allows second aliased deployment to find cluster.
+  ## Default {{ template opendistro-es.fullname }}-discovery.
+  discoveryOverride: ""
+  securityConfig:
+    enabled: true
+    path: "/usr/share/elasticsearch/plugins/opendistro_security/securityconfig"
+    actionGroupsSecret:
+    configSecret:
+    internalUsersSecret:
+    rolesSecret:
+    rolesMappingSecret:
+    tenantsSecret:
+    #The following option simplifies securityConfig by using a single secret and specifying the respective secrets in the corresponding files instead of creating different secrets for config,internal users, roles, roles mapping and tenants
+    #Note that this is an alternative to the above secrets and shouldn't be used if the above secrets are used
+    config:
+      securityConfigSecret:
+      data:
+        internal_users.yml: |
+          # This is the internal user database
+          # The hash value is a bcrypt hash and can be generated with plugin/tools/hash.sh
+
+          _meta:
+            type: "internalusers"
+            config_version: 2
+
+          # Define your internal users here
+          admin:
+            hash: "$2y$12$xq87L.6NOPJAnrfH2p54j.KFIGE5Aod7m9BwjU6Tw.W6pBs3FcDBm"
+            reserved: true
+            backend_roles:
+            - "admin"
+            description: "super admin user Elastic@123"
+
+          kibanaserver:
+            hash: "$2y$12$kNZy07fzILhK7XVLeoPStOMbMoPL5ftiib4J5Vl.hAHiIDMvFvHPa"
+            reserved: true
+            description: "the kibanaserver user Kibana@123"
+       # config.yml: |-
+       # roles.yml: |-
+       # rolesMapping.yml: |-
+       # tenants.yml: |-
+
+
+  ## securityContext to apply to the pod. Allows for running as non-root
+  securityContextCustom: {}
+  #  fsGroup: 1000
+  #  runAsUser: 1000
+  #  runAsGroup: 1000
+
+  extraEnvs: []
+
+  extraInitContainers: []
+  # - name: do-something
+  #   image: busybox
+  #   command: ['do', 'something']
+
+  extraVolumes: []
+  # - name: extras
+  #   emptyDir: {}
+
+  extraVolumeMounts: []
+  # - name: extras
+  #   mountPath: /usr/share/extras
+  #   readOnly: true
+
+  initContainer:
+    image: busybox
+    imageTag: 1.27.2
+
+  ## Set optimal sysctl's. This requires privilege. Can be disabled if
+  ## the system has already been preconfigured.
+  sysctl:
+    enabled: true
+
+  ## Give SYS_CHROOT cap to ES pods. This might not be neccesary
+  sys_chroot:
+    enabled: true
+
+  ## init container to chown the mount volume. not neccesary if setting a
+  ## fsGroup in the securityContext
+  fixmount:
+    enabled: true
+
+  ssl:
+    enabled: true
+    data:
+      root-ca.pem: |
+        -----BEGIN CERTIFICATE-----
+        MIIDuTCCAqGgAwIBAgIJAP5t3QcZermfMA0GCSqGSIb3DQEBCwUAMHIxCzAJBgNV
+        BAYTAmNuMQswCQYDVQQIDAJjcTELMAkGA1UEBwwCY3ExDjAMBgNVBAoMBWdlZWdh
+        MQ0wCwYDVQQLDARwYWFzMQwwCgYDVQQDDANzcmUxHDAaBgkqhkiG9w0BCQEWDWJv
+        ZXJAYm9lci54eXowIBcNMjExMTI1MDMwMTA0WhgPMjEyMTExMDEwMzAxMDRaMHIx
+        CzAJBgNVBAYTAmNuMQswCQYDVQQIDAJjcTELMAkGA1UEBwwCY3ExDjAMBgNVBAoM
+        BWdlZWdhMQ0wCwYDVQQLDARwYWFzMQwwCgYDVQQDDANzcmUxHDAaBgkqhkiG9w0B
+        CQEWDWJvZXJAYm9lci54eXowggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIB
+        AQC+XZ4ZZAEje9qvIKg634RTs6KFEfnzShuUUzmMn9a8EmmKf4DW5dCf+lKZPP+R
+        oDKWTe5FmUjB13ynCTd0ZC+hnnCfuoJ4C09+WBBVr8UQp4pLAxoiRjbWW93S9yDS
+        KH1Hr2UO+5h30AN2gggFp4p+1qdchREzvIZCAUqXz+iPwxOJw/LUe/0mHu1rMAf1
+        tS0c4etXw/ihf+EB8fNs/IPGt3vNxQgolH0G7lxxIst9arBHm9lrzfIIFIEwzfTQ
+        SvR6gKSXY+OHlaRDXXKdzLILFVW3KXsW+EvvWS2d7A4ZhIPb7faENoqJCGrTrceR
+        ZX2/DrTl4mvg1pqP4Jsv3hahAgMBAAGjUDBOMB0GA1UdDgQWBBSZSVqkuG2LkHRN
+        svJtQRXhKy34UTAfBgNVHSMEGDAWgBSZSVqkuG2LkHRNsvJtQRXhKy34UTAMBgNV
+        HRMEBTADAQH/MA0GCSqGSIb3DQEBCwUAA4IBAQB8izFhnuBh+rRqn+YmyJ9JV3wy
+        v1AmwbY7FBr6qnrMoNZ8cdgqzgJtAB/727hKofPJUBbH9N6+pJaf4UE5PY9SBDkT
+        a99oQDYuI3z+yPn0QyA5LC0ngO1sC+fFQp5i0bChhGKetbMy0ZFRgaU8k+8JysMh
+        zat01S32MeMBlzorLN9ZWVwb1WB+3jZvfpj25aQbxj318OX7Q+Y9x2O7YnUtF1WH
+        f6QesJ5SnTVNdo65UgHBpcb23c3pPc7jPMPE+6pFDGcLue/aeIlgZFORFw3GIj78
+        kTn+aLMMvg5TDDn3VEvxzmdhn7apaGVzT7cWxmrmYEeJtG/rJWm/NUMZvlWm
+        -----END CERTIFICATE-----
+      node.pem: |
+        -----BEGIN CERTIFICATE-----
+        MIIDRjCCAi4CCQDyEIckvjWSYDANBgkqhkiG9w0BAQsFADByMQswCQYDVQQGEwJj
+        bjELMAkGA1UECAwCY3ExCzAJBgNVBAcMAmNxMQ4wDAYDVQQKDAVnZWVnYTENMAsG
+        A1UECwwEcGFhczEMMAoGA1UEAwwDc3JlMRwwGgYJKoZIhvcNAQkBFg1ib2VyQGJv
+        ZXIueHl6MCAXDTIxMTEyNjA2MjIzOVoYDzIxMjExMTAyMDYyMjM5WjBWMQswCQYD
+        VQQGEwJjbjELMAkGA1UECAwCY3ExCzAJBgNVBAcMAmNxMQ4wDAYDVQQKDAVnZWVn
+        YTENMAsGA1UECwwEcGFhczEOMAwGA1UEAwwFbm9kZXMwggEiMA0GCSqGSIb3DQEB
+        AQUAA4IBDwAwggEKAoIBAQDQrzbfGUNaZv8qL6GhyXDvaMOn5x/Kpw7+6zgz4+aR
+        rTiDM1UF5v8XWAn+rQuX0GXodVm5yNVqQNWc3d+wiLiRnoAtXd1u3kJkQsD4n7lN
+        z680f3MVtePRrxH3ePU1QY2xM8aSHA87TZBq5HDDv6hHInv4HuVJGqhOnKKQN59g
+        rnl6jZesVtB642ixKiIyt2h8w2feMSjAaY34Eh7N5sJmMXO5ukEOoGzX3N8EL3hl
+        ffd8mpJXMfIzp67jPKgdTkV1z9cHvJN1qwBdF4+xpv7zUHKRVuU8WgEHC5is7hl8
+        BCE1ko04UWTffOjHwUHzSbZ3kKYq7ZLVTMmMU1Wt6hNfAgMBAAEwDQYJKoZIhvcN
+        AQELBQADggEBAF2ZBdMiXXjDn+ZgsgXn1AhVGj/H7RO2HpXtLMGO9QliM6QBI7zd
+        TZmC6xwwGCJ5YzDBf0UW2qoQx8KJSiPIbR1ZIujVByikhZkZ+ZSoo85CT+K0lssW
+        8Ll4LtP7aMF7Sjrk9Xl70IdmLfWHpSS7/AKsmtYm10YtNCyAgE/mgiG8CLop/Jpx
+        suWVkAOdeOyJ2SOceszYN8aIXWRNV0vtKFy+k9xScnLeUPB4wBsuv+LQXOJj2EoB
+        YPO0N3uBJPnvmykIdYygMtetffVWUNNubbLfecWcuEm7WOUAPFpFZC2xinXNe0Rk
+        tHYiqkhAhLdmuMaCQ6g/N/pLkJ/V2nEHYCo=
+        -----END CERTIFICATE-----
+      node-key.pem: |
+        -----BEGIN PRIVATE KEY-----
+        MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDQrzbfGUNaZv8q
+        L6GhyXDvaMOn5x/Kpw7+6zgz4+aRrTiDM1UF5v8XWAn+rQuX0GXodVm5yNVqQNWc
+        3d+wiLiRnoAtXd1u3kJkQsD4n7lNz680f3MVtePRrxH3ePU1QY2xM8aSHA87TZBq
+        5HDDv6hHInv4HuVJGqhOnKKQN59grnl6jZesVtB642ixKiIyt2h8w2feMSjAaY34
+        Eh7N5sJmMXO5ukEOoGzX3N8EL3hlffd8mpJXMfIzp67jPKgdTkV1z9cHvJN1qwBd
+        F4+xpv7zUHKRVuU8WgEHC5is7hl8BCE1ko04UWTffOjHwUHzSbZ3kKYq7ZLVTMmM
+        U1Wt6hNfAgMBAAECggEAXLsfRO/y7/8Ir/ROfJgI6TnCh5+6jtDBZyGa7eP9lwpE
+        LHjo9SB6hiMG/fZjSmi+gBd1cYr+2qJIydYGCmoWqg6mooItXZDCK89F9LT1INCC
+        6G8h8qnKvGhxMWi8fZfNoMqDGHYDhrSm0fkE6tcFreZy9AS2mk+QLq6HxlIRLmJL
+        hvQxgnv8YpAihU9liv8Kkg9D/oPCgzSadTwMV288PHVXWCCSvQLl/nvIdKLhyjuF
+        xhpCn04z4zSBm8j6AoSas2ECYZwRhyraPLeIwOBqNJ+PaPWDLnILWpNfrkGyhF7s
+        glrLxQ5mi3vEOJOqlZtfqvsVlSeL4wWUjZgmHES1sQKBgQD4C9vCxcfhN2mmvsno
+        P9PKLr1b70A4a1kWvOyHFcicDYV7z/q3hGh+wOSEJbRdrLX9BW0E/8KRG0N80GGn
+        AaDFDPDEX95LUFslFfWadmmnoGe8kdSUF159HOdFhpzihqbqs9FKoyZUnvJQ8urd
+        CcwcuKiCHRGECldgmTtXGZvPiwKBgQDXYD7PsMynlIU6hgqLri03le6lQtLCqldJ
+        K3E/klJnb0jvaI/rdA1AaQ8LRnZEC6E/NhwNbKp6ENh4d1yz5Vit23NfW2vV8eaw
+        5LKM6yEdHvVnflBwFnea8Mf8bMDHOrEVy2ih0kds7HcdnxM7iERTzfef+2OwCux7
+        gUjNb6jF/QKBgQCGAHoHniueWv5Dq7yOMLUs+9UmrnjmQfAOHaA2VilbTN65BaGv
+        tONy3qhVT71CAgULHPxJgBZPqAfsjPLEc1e0PIpxvEzuKQokXdmiSahIe5qvP6U1
+        H+7W7l9uqwtkQVQ5ZU2C4eLaQkgsPR9urFVNiuDV8fg9egy8TevF4TrQgwKBgCN/
+        t5qf93t/nV4CDebr9IP+8HDIzNhNH0nuISJrSa3Gx+y9/Uq/vBdruZEQMhoRGKjE
+        kGceDBNGh4eDlQIJwU4Wp7OF7AY9ctqhN1TGxJR6L9S5GyT+bwRYv325pySvZdTD
+        zCEv+ZnYd+GoAJGFak2t2yzBULMJeeT5cDh8OQM5AoGAYW/zv5bam+tMwDID3Bex
+        VprOj0fxL5owVr7MEv8hIrgBdTKnPryGgLjhF9Za5YvOo13PQTHkjNsxyBwFSxIk
+        +gIPeTFxumoPZiLmONaPFcMwAPWc2HKRlYNr627JKV6dKw2NX6BG+XFH+faYxgE1
+        BA+h9/xFflf1jWlgqujURCc=
+        -----END PRIVATE KEY-----
+      admin.pem: |
+        -----BEGIN CERTIFICATE-----
+        MIIDRjCCAi4CCQDyEIckvjWSXzANBgkqhkiG9w0BAQsFADByMQswCQYDVQQGEwJj
+        bjELMAkGA1UECAwCY3ExCzAJBgNVBAcMAmNxMQ4wDAYDVQQKDAVnZWVnYTENMAsG
+        A1UECwwEcGFhczEMMAoGA1UEAwwDc3JlMRwwGgYJKoZIhvcNAQkBFg1ib2VyQGJv
+        ZXIueHl6MCAXDTIxMTEyNjA2MTUzNloYDzIxMjExMTAyMDYxNTM2WjBWMQswCQYD
+        VQQGEwJjbjELMAkGA1UECAwCY3ExCzAJBgNVBAcMAmNxMQ4wDAYDVQQKDAVnZWVn
+        YTENMAsGA1UECwwEcGFhczEOMAwGA1UEAwwFYWRtaW4wggEiMA0GCSqGSIb3DQEB
+        AQUAA4IBDwAwggEKAoIBAQDFNHnZYQ40/6LhMmEy9g2zw7ipZXyFbOEWmTwiZUHd
+        Y97wXXFpHoIoUObkg3dX0dUf9HMXvbiQg5o2cWScGHrplvgh9BVhgUNrOA98kGU0
+        Wcj2nvEpJC/z6ejZtmFd0aHj+WmDVoul19feMZupkrwgaObFzBr5nDYl15zXGTjZ
+        ILpSZx2ArBjfzcJQMQg7eU23a+5cpNLx4j0rpemp0JFVu3IXcBI8Qm0Qi6PL/DXO
+        SdxCuygS6kWACZn76QdAgkKpSH8hRYpNKl0I662N/tEXYz2fgkWehK4MnHiPZIzD
+        u88d6VX/0F9fkEfG0t48T+M0113MalgHF8RAaWW6YsypAgMBAAEwDQYJKoZIhvcN
+        AQELBQADggEBAGaG6lFNIE4ThGplbpPqbTmphxiaAM7JXiMqMtY3XWNgUjjlvKU3
+        rEDsorLr3914y4Lj/4Pp0kD6LCgbPPQcJ5QIlXORF2pyREd5I2kUqDPBOppeQpib
+        WpTi8CGGoOoBlME02zOOh4gouSdiu5+aovk4EbwsEuMckBQCECNP7QWdsPH4V0aN
+        kT+lIkCurAtblesyDVQC8+LHHaTbp2t4doGu/J1XFDXWnqle2NeR5FdsrflwhhCT
+        zk8u3IGo1PV7EC4sxg1jjjIOk6+/o3MErvsPdnSk/zAu4TMvsuvDKmyjK8kvHqpc
+        tn36L3IKs7vgcqlp3U5xFeNc4Lzc+WgTLbY=
+        -----END CERTIFICATE-----
+      admin-key.pem: |
+        -----BEGIN PRIVATE KEY-----
+        MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDFNHnZYQ40/6Lh
+        MmEy9g2zw7ipZXyFbOEWmTwiZUHdY97wXXFpHoIoUObkg3dX0dUf9HMXvbiQg5o2
+        cWScGHrplvgh9BVhgUNrOA98kGU0Wcj2nvEpJC/z6ejZtmFd0aHj+WmDVoul19fe
+        MZupkrwgaObFzBr5nDYl15zXGTjZILpSZx2ArBjfzcJQMQg7eU23a+5cpNLx4j0r
+        pemp0JFVu3IXcBI8Qm0Qi6PL/DXOSdxCuygS6kWACZn76QdAgkKpSH8hRYpNKl0I
+        662N/tEXYz2fgkWehK4MnHiPZIzDu88d6VX/0F9fkEfG0t48T+M0113MalgHF8RA
+        aWW6YsypAgMBAAECggEAZnVnQXvdp8eR1rMYMSQJ5nYwAUMLOT9iix0+UxiM6fuz
+        nurNu7HwKgYukFeFsAkDVEDrc1BNDjhx7QtpHHjTk32umeV5HlnMr25HDY7wJgzo
+        DspxvdBhYbcMFeFeISKDnDC/k09p6taD/5uCps3oFGasT+RFt55ju7GUeWVPVe9z
+        ntfgLJwybTjipLI/ye/PKQ/xTxcEgDAkVsQuBnYJaGf2NAA8D9zhTY2pm7wm3wQL
+        FI2wFwHYrk+IKyjwE42WWg4/qBuMU9saT2I/I6ry3GEqmhvPev1LPssFWlGcZfyP
+        moKnRJGzSz9z8m2euJp2+V6AQ1DAJoTge2YubUL8AQKBgQDjx6OJlkdlC/Lg2jko
+        Z+alfUEKTtpwwcTT7rmjJuBGLxcr3fy0yeD5WDYc9sB60FJGSkqHfQbc500uxjbc
+        O1NDP3cOYGb4EYk18jXGgkBoNcIJV3d+BAAuc37q86N6gOdLGZ/ezPoEKphx9Pnj
+        SQRb/P1DP3B8g7OZ8u43nU6j6QKBgQDdoxy5CZ8v/XOjwNgogzRmFtaIN4evC+qs
+        WuMgjdMja64S2/qqNV6ho4+mXpSXxG4Hfj7w77uvFmlG91C8ZDfXCt8vqCPXklm6
+        IQleDAs6cCHlY6V7ACUWt2W6cBSQlmWffuypJC8t3TVPtUvOlyQim9mcOomB1vzX
+        KaDwSW0qwQKBgQCWVGsNYj5KZUFtvvicPz6NGAZ1/CbU5j22NccU85JvH6MmU4L1
+        +ordZaeJJB1SsOyr8VoQ46ZE4u8goLcSUKEaL+eueFdc/43UKb/t/IbvgBNIwQ5e
+        /9ryzU0FWbkaH7sG6KmHjTawy0ADbdACfm0/HNA1ssfVlcJSJ2+rCsodCQKBgQCP
+        hrlq+lgj87WXLaLNWWntUozK2Wr8aHMn+hNrWWyJW4n2nI3O+5C0i/7Sdh0zyviV
+        0aNg015vG8xBMJcP6LZgg6HUcsYDK7r/VbWDOblrtoG80rKu3IEoHMu72Cj5GOvm
+        RYNsZQpIYR/M5lKZDjdQUiyxhxbVBivmCgc2k9YmAQKBgG3Pk/tgVc8aDJm9l2O/
+        OKdNP6QsRFpby0VxCmciuYss+0jkRF9h+ERHEShfgbXrOkH0PLQ9IWfigt4wJxTE
+        xybFEyQVzglHWqiX5TSfmMZC2D/rwzS8Opc3hhDTW30zH5JI0v2dJEyMg3JKRyVy
+        8UyEufgO2sipouBcsd/1ZYY1
+        -----END PRIVATE KEY-----
+    ## TLS is mandatory for the transport layer and can not be disabled
+    transport:
+      existingCertSecret: es-tls
+      existingCertSecretCertSubPath: node.pem
+      existingCertSecretKeySubPath: node-key.pem
+      existingCertSecretRootCASubPath: root-ca.pem
+    rest:
+      enabled: false
+      existingCertSecret: es-tls
+      existingCertSecretCertSubPath: elk-rest-crt.pem
+      existingCertSecretKeySubPath: elk-rest-key.pem
+      existingCertSecretRootCASubPath: elk-rest-root-ca.pem
+    admin:
+      enabled: true
+      existingCertSecret: es-tls
+      existingCertSecretCertSubPath: admin.pem
+      existingCertSecretKeySubPath: admin-key.pem
+      existingCertSecretRootCASubPath: root-ca.pem
+
+  master:
+    enabled: true
+    replicas: 1
+    updateStrategy: "RollingUpdate"
+
+    ## Enable persistence using Persistent Volume Claims
+    ## ref: http://kubernetes.io/docs/user-guide/persistent-volumes/
+    ##
+    persistence:
+      enabled: true
+      ## A manually managed Persistent Volume and Claim
+      ## Requires persistence.enabled: true
+      ## If defined, PVC must be created manually before volume will be bound
+      ##
+      # existingClaim:
+
+      ## The subdirectory of the volume to mount to, useful in dev environments
+      ## and one PV for multiple services.
+      ##
+      subPath: ""
+
+      ## Open Distro master Persistent Volume Storage Class
+      ## If defined, storageClassName: <storageClass>
+      ## If set to "-", storageClassName: "", which disables dynamic provisioning
+      ## If undefined (the default) or set to null, no storageClassName spec is
+      ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
+      ##   GKE, AWS & OpenStack)
+      ##
+      # storageClass: "-"
+      accessModes:
+        - ReadWriteOnce
+      size: 8Gi
+      annotations: {}
+
+    resources: {}
+    #  limits:
+    #    cpu: 1
+    #    memory: 1024Mi
+    #  requests:
+    #    cpu: 200m
+    #    memory: 1024Mi
+    javaOpts: "-Xms512m -Xmx512m"
+    podDisruptionBudget:
+      enabled: false
+      minAvailable: 1
+    readinessProbe: []
+    livenessProbe:
+      tcpSocket:
+        port: transport
+      initialDelaySeconds: 60
+      periodSeconds: 10
+    startupProbe: []
+    nodeSelector: {}
+    tolerations: []
+    ## Anti-affinity to disallow deploying client and master nodes on the same worker node
+    affinity: {}
+    #  podAntiAffinity:
+    #    requiredDuringSchedulingIgnoredDuringExecution:
+    #      - topologyKey: "kubernetes.io/hostname"
+    #        labelSelector:
+    #          matchLabels:
+    #            role: master
+    podAnnotations: {}
+
+    extraInitContainers: []
+    # - name: do-something
+    #   image: busybox
+    #   command: ['do', 'something']
+
+    extraContainers: []
+    # - name: do-something
+    #   image: busybox
+    #   command: ['do', 'something']
+
+  data:
+    enabled: false
+    ## Enables dedicated statefulset for data. Otherwise master nodes as data storage
+    dedicatedPod:
+      enabled: false
+    replicas: 1
+    updateStrategy: "RollingUpdate"
+
+    ## Enable persistence using Persistent Volume Claims
+    ## ref: http://kubernetes.io/docs/user-guide/persistent-volumes/
+    ##
+    persistence:
+      enabled: true
+      ## A manually managed Persistent Volume and Claim
+      ## Requires persistence.enabled: true
+      ## If defined, PVC must be created manually before volume will be bound
+      ##
+      # existingClaim:
+
+      ## The subdirectory of the volume to mount to, useful in dev environments
+      ## and one PV for multiple services.
+      ##
+      subPath: ""
+
+      ## Open Distro master Persistent Volume Storage Class
+      ## If defined, storageClassName: <storageClass>
+      ## If set to "-", storageClassName: "", which disables dynamic provisioning
+      ## If undefined (the default) or set to null, no storageClassName spec is
+      ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
+      ##   GKE, AWS & OpenStack)
+      ##
+      # storageClass: "-"
+      accessModes:
+        - ReadWriteOnce
+      size: 8Gi
+      annotations: {}
+
+    resources: {}
+    #  limits:
+    #    cpu: 1
+    #    memory: 1024Mi
+    #  requests:
+    #    cpu: 200m
+    #    memory: 1024Mi
+    javaOpts: "-Xms512m -Xmx512m"
+    podDisruptionBudget:
+      enabled: false
+      minAvailable: 1
+    readinessProbe: []
+    livenessProbe:
+      tcpSocket:
+        port: transport
+      initialDelaySeconds: 60
+      periodSeconds: 10
+    startupProbe: []
+    nodeSelector: {}
+    tolerations: []
+    ## Anti-affinity to disallow deploying client and master nodes on the same worker node
+    affinity: {}
+    #  podAntiAffinity:
+    #    preferredDuringSchedulingIgnoredDuringExecution:
+    #      - weight: 1
+    #        podAffinityTerm:
+    #          topologyKey: "kubernetes.io/hostname"
+    #          labelSelector:
+    #            matchLabels:
+    #              role: data
+    podAnnotations: {}
+
+  client:
+    enabled: false
+    ## Enables dedicated deployment for client/ingest. Otherwise master nodes as client/ingest
+    dedicatedPod:
+      enabled: false
+    service:
+      type: ClusterIP
+      annotations: {}
+        # # Defined ELB backend protocol as HTTPS to allow connection to Elasticsearch API
+        # service.beta.kubernetes.io/aws-load-balancer-backend-protocol: https
+
+        # # ARN of ACM certificate registered to the deployed ELB for handling connections over TLS
+        # # ACM certificate should be issued to the DNS hostname defined earlier (elk.sec.example.com)
+        # service.beta.kubernetes.io/aws-load-balancer-ssl-cert: "arn:aws:acm:us-east-1:111222333444:certificate/c69f6022-b24f-43d9-b9c8-dfe288d9443d"
+        # service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "https"
+
+        # service.beta.kubernetes.io/aws-load-balancer-connection-draining-enabled: "true"
+        # service.beta.kubernetes.io/aws-load-balancer-connection-draining-timeout: "60"
+        # service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
+
+        # # Annotation to create internal only ELB
+        # service.beta.kubernetes.io/aws-load-balancer-internal: 0.0.0.0/0
+    replicas: 1
+    javaOpts: "-Xms512m -Xmx512m"
+    ingress:
+      ## Set to true to enable ingress record generation
+      enabled: false
+      annotations: {}
+      #  kubernetes.io/ingress.class: nginx
+      #  kubernetes.io/tls-acme: "true"
+      #  # Depending on your Ingress Controller you may need to set one of the two below annotations to have NGINX call the backend using HTTPS
+      #  nginx.org/ssl-services:"{{ template "opendistro-es.fullname" . }}-client-service"
+      #  nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+      labels: {}
+      path: /
+      hosts:
+        - chart-example.local
+      tls: []
+      #  - secretName: chart-example-tls
+      #    hosts:
+      #      - chart-example.local
+    resources: {}
+    #  limits:
+    #    cpu: 1
+    #    memory: 1024Mi
+    #  requests:
+    #    cpu: 200m
+    #    memory: 1024Mi
+    podDisruptionBudget:
+      enabled: false
+      minAvailable: 1
+    readinessProbe: []
+    livenessProbe:
+      tcpSocket:
+        port: transport
+      initialDelaySeconds: 60
+      periodSeconds: 10
+    startupProbe: []
+    nodeSelector: {}
+    tolerations: []
+    ## Weighted anti-affinity to disallow deploying client node to the same worker node as master node
+    affinity: {}
+    #  podAntiAffinity:
+    #    preferredDuringSchedulingIgnoredDuringExecution:
+    #      - weight: 1
+    #        podAffinityTerm:
+    #          topologyKey: "kubernetes.io/hostname"
+    #          labelSelector:
+    #            matchLabels:
+    #              role: client
+    podAnnotations: {}
+
+  config: |
+    cluster:
+      name: ${CLUSTER_NAME}
+    node:
+      name: ${NODE_NAME}
+      master: ${NODE_MASTER}
+      data: ${NODE_DATA}
+      ingest: ${NODE_INGEST}
+    path.data: /usr/share/elasticsearch/data
+    path.logs: /usr/share/elasticsearch/logs
+    bootstrap.memory_lock: true
+    network.host: 0.0.0.0
+    http:
+      enabled: ${HTTP_ENABLE}
+      compression: true
+      port: 9200
+    discovery.seed_hosts: ${DISCOVERY_SERVICE}
+    cluster.initial_master_nodes: ${DISCOVERY_SERVICE}
+    opendistro_security.ssl.transport.pemcert_filepath: node.pem
+    opendistro_security.ssl.transport.pemkey_filepath: node-key.pem
+    opendistro_security.ssl.transport.pemtrustedcas_filepath: root-ca.pem
+    opendistro_security.ssl.transport.enforce_hostname_verification: false
+    opendistro_security.ssl.http.enabled: false
+    opendistro_security.ssl.http.pemcert_filepath: node.pem
+    opendistro_security.ssl.http.pemkey_filepath: node-key.pem
+    opendistro_security.ssl.http.pemtrustedcas_filepath: root-ca.pem
+    # opendistro_security.allow_unsafe_democertificates: false
+    # opendistro_security.allow_default_init_securityindex: false
+    opendistro_security.authcz.admin_dn:
+      - CN=admin,OU=paas,O=geega,L=cq,ST=cq,C=cn
+    opendistro_security.nodes_dn:
+      - CN=nodes,OU=paas,O=geega,L=cq,ST=cq,C=cn
+    opendistro_security.audit.type: internal_elasticsearch
+    opendistro_security.enable_snapshot_restore_privilege: true
+    opendistro_security.check_snapshot_restore_write_privileges: true
+    opendistro_security.restapi.roles_enabled: ["all_access", "security_rest_api_access"]
+    opendistro_security.system_indices.enabled: true
+    opendistro_security.system_indices.indices: [".opendistro-alerting-config", ".opendistro-alerting-alert*", ".opendistro-anomaly-results*", ".opendistro-anomaly-detector*", ".opendistro-anomaly-checkpoints", ".opendistro-anomaly-detection-state", ".opendistro-reports-*", ".opendistro-notifications-*", ".opendistro-notebooks", ".opendistro-asynchronous-search-response*"]
+    # cluster.routing.allocation.disk.threshold_enabled: false
+
+    ## Example Config
+    # opendistro_security.allow_unsafe_democertificates: false
+    # opendistro_security.allow_default_init_securityindex: true
+    # opendistro_security.audit.type: internal_elasticsearch
+    # opendistro_security.enable_snapshot_restore_privilege: true
+    # opendistro_security.check_snapshot_restore_write_privileges: true
+    # cluster.routing.allocation.disk.threshold_enabled: false
+    # opendistro_security.audit.config.disabled_rest_categories: NONE
+    # opendistro_security.audit.config.disabled_transport_categories: NONE
+    # cluster:
+    #   name: ${CLUSTER_NAME}
+    # node:
+    #   master: ${NODE_MASTER}
+    #   data: ${NODE_DATA}
+    #   name: ${NODE_NAME}
+    #   ingest: ${NODE_INGEST}
+    #   max_local_storage_nodes: 1
+    #   attr.box_type: hot
+
+    # processors: ${PROCESSORS:1}
+
+    # network.host: ${NETWORK_HOST}
+
+    # thread_pool.bulk.queue_size: 800
+
+    # path:
+    #   data: /usr/share/elasticsearch/data
+    #   logs: /usr/share/elasticsearch/logs
+
+    # http:
+    #   enabled: ${HTTP_ENABLE}
+    #   compression: true
+
+    # discovery:
+    #   zen:
+    #     ping.unicast.hosts: ${DISCOVERY_SERVICE}
+    #     minimum_master_nodes: ${NUMBER_OF_MASTERS}
+
+    # # TLS Configuration Transport Layer
+    # opendistro_security.ssl.transport.pemcert_filepath: elk-transport-crt.pem
+    # opendistro_security.ssl.transport.pemkey_filepath: elk-transport-key.pem
+    # opendistro_security.ssl.transport.pemtrustedcas_filepath: elk-transport-root-ca.pem
+    # opendistro_security.ssl.transport.enforce_hostname_verification: false
+
+    # # TLS Configuration REST Layer
+    # opendistro_security.ssl.http.enabled: true
+    # opendistro_security.ssl.http.pemcert_filepath: elk-rest-crt.pem
+    # opendistro_security.ssl.http.pemkey_filepath: elk-rest-key.pem
+    # opendistro_security.ssl.http.pemtrustedcas_filepath: elk-rest-root-ca.pem
+
+  log4jConfig: ""
+
+  loggingConfig:
+    ## Default config
+    ## you can override this using by setting a system property, for example -Des.logger.level=DEBUG
+    es.logger.level: INFO
+    rootLogger: ${es.logger.level}, console
+    logger:
+      ## log action execution errors for easier debugging
+      action: DEBUG
+      ## reduce the logging for aws, too much is logged under the default INFO
+      com.amazonaws: WARN
+    appender:
+      console:
+        type: console
+        layout:
+          type: consolePattern
+          conversionPattern: "[%d{ISO8601}][%-5p][%-25c] %m%n"
+
+  transportKeyPassphrase:
+    enabled: false
+    passPhrase:
+
+  sslKeyPassphrase:
+    enabled: false
+    passPhrase:
+
+  maxMapCount: 262144
+
+  image: amazon/opendistro-for-elasticsearch
+  imageTag: 1.13.2
+  ## Specifies the image pull policy. Can be "Always" or "IfNotPresent" or "Never".
+  ## Default to "Always".
+  imagePullPolicy: ""
+
+  configDirectory: /usr/share/elasticsearch/config
+
+  serviceAccount:
+    ## Specifies whether a ServiceAccount should be created
+    create: true
+    ## The name of the ServiceAccount to use.
+    ## If not set and create is true, a name is generated using the fullname template
+    name:
+
+
+nameOverride: ""
+fullnameOverride: ""
