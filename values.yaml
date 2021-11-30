@@ -266,7 +266,7 @@ elasticsearch:
   ssl:
     enabled: true
     data:
-      node-root-ca.pem:
+      node-root-ca:
         -----BEGIN CERTIFICATE-----
         MIIDuTCCAqGgAwIBAgIJAP5t3QcZermfMA0GCSqGSIb3DQEBCwUAMHIxCzAJBgNV
         BAYTAmNuMQswCQYDVQQIDAJjcTELMAkGA1UEBwwCY3ExDjAMBgNVBAoMBWdlZWdh
@@ -289,7 +289,7 @@ elasticsearch:
         f6QesJ5SnTVNdo65UgHBpcb23c3pPc7jPMPE+6pFDGcLue/aeIlgZFORFw3GIj78
         kTn+aLMMvg5TDDn3VEvxzmdhn7apaGVzT7cWxmrmYEeJtG/rJWm/NUMZvlWm
         -----END CERTIFICATE-----
-      node.pem:
+      node:
         -----BEGIN CERTIFICATE-----
         MIIDRjCCAi4CCQDyEIckvjWSYDANBgkqhkiG9w0BAQsFADByMQswCQYDVQQGEwJj
         bjELMAkGA1UECAwCY3ExCzAJBgNVBAcMAmNxMQ4wDAYDVQQKDAVnZWVnYTENMAsG
@@ -310,7 +310,7 @@ elasticsearch:
         YPO0N3uBJPnvmykIdYygMtetffVWUNNubbLfecWcuEm7WOUAPFpFZC2xinXNe0Rk
         tHYiqkhAhLdmuMaCQ6g/N/pLkJ/V2nEHYCo=
         -----END CERTIFICATE-----
-      node-key.pem:
+      node-key:
         -----BEGIN PRIVATE KEY-----
         MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDQrzbfGUNaZv8q
         L6GhyXDvaMOn5x/Kpw7+6zgz4+aRrTiDM1UF5v8XWAn+rQuX0GXodVm5yNVqQNWc
@@ -339,7 +339,7 @@ elasticsearch:
         +gIPeTFxumoPZiLmONaPFcMwAPWc2HKRlYNr627JKV6dKw2NX6BG+XFH+faYxgE1
         BA+h9/xFflf1jWlgqujURCc=
         -----END PRIVATE KEY-----
-      admin-root-ca.pem:
+      admin-root-ca:
         -----BEGIN CERTIFICATE-----
         MIIDuTCCAqGgAwIBAgIJAP5t3QcZermfMA0GCSqGSIb3DQEBCwUAMHIxCzAJBgNV
         BAYTAmNuMQswCQYDVQQIDAJjcTELMAkGA1UEBwwCY3ExDjAMBgNVBAoMBWdlZWdh
@@ -362,7 +362,7 @@ elasticsearch:
         f6QesJ5SnTVNdo65UgHBpcb23c3pPc7jPMPE+6pFDGcLue/aeIlgZFORFw3GIj78
         kTn+aLMMvg5TDDn3VEvxzmdhn7apaGVzT7cWxmrmYEeJtG/rJWm/NUMZvlWm
         -----END CERTIFICATE-----
-      admin.pem:
+      admin:
         -----BEGIN CERTIFICATE-----
         MIIDRjCCAi4CCQDyEIckvjWSXzANBgkqhkiG9w0BAQsFADByMQswCQYDVQQGEwJj
         bjELMAkGA1UECAwCY3ExCzAJBgNVBAcMAmNxMQ4wDAYDVQQKDAVnZWVnYTENMAsG
@@ -383,7 +383,7 @@ elasticsearch:
         zk8u3IGo1PV7EC4sxg1jjjIOk6+/o3MErvsPdnSk/zAu4TMvsuvDKmyjK8kvHqpc
         tn36L3IKs7vgcqlp3U5xFeNc4Lzc+WgTLbY=
         -----END CERTIFICATE-----
-      admin-key.pem:
+      admin-key:
         -----BEGIN PRIVATE KEY-----
         MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDFNHnZYQ40/6Lh
         MmEy9g2zw7ipZXyFbOEWmTwiZUHdY97wXXFpHoIoUObkg3dX0dUf9HMXvbiQg5o2
