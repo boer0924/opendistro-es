@@ -97,9 +97,9 @@ kibana:
     type: ClusterIP
     annotations: {}
 
-  config: |
+  config: |-
     # https://www.elastic.co/guide/en/kibana/7.10/settings.html
-    server.host: 0.0.0.0
+    server.host: "0.0.0.0"
     server.port: 5601
     elasticsearch.hosts: http://localhost:9200
     elasticsearch.ssl.verificationMode: none
@@ -197,7 +197,7 @@ elasticsearch:
     config:
       securityConfigSecret:
       data:
-        internal_users.yml: |
+        internal_users.yml: |-
           # This is the internal user database
           # The hash value is a bcrypt hash and can be generated with plugin/tools/hash.sh
 
@@ -266,7 +266,7 @@ elasticsearch:
   ssl:
     enabled: true
     data:
-      es-root-ca.pem: |
+      es-root-ca.pem: |-
         -----BEGIN CERTIFICATE-----
         MIIDuTCCAqGgAwIBAgIJAP5t3QcZermfMA0GCSqGSIb3DQEBCwUAMHIxCzAJBgNV
         BAYTAmNuMQswCQYDVQQIDAJjcTELMAkGA1UEBwwCY3ExDjAMBgNVBAoMBWdlZWdh
@@ -289,7 +289,7 @@ elasticsearch:
         f6QesJ5SnTVNdo65UgHBpcb23c3pPc7jPMPE+6pFDGcLue/aeIlgZFORFw3GIj78
         kTn+aLMMvg5TDDn3VEvxzmdhn7apaGVzT7cWxmrmYEeJtG/rJWm/NUMZvlWm
         -----END CERTIFICATE-----
-      node.pem: |
+      node.pem: |-
         -----BEGIN CERTIFICATE-----
         MIIDRjCCAi4CCQDyEIckvjWSYDANBgkqhkiG9w0BAQsFADByMQswCQYDVQQGEwJj
         bjELMAkGA1UECAwCY3ExCzAJBgNVBAcMAmNxMQ4wDAYDVQQKDAVnZWVnYTENMAsG
@@ -310,7 +310,7 @@ elasticsearch:
         YPO0N3uBJPnvmykIdYygMtetffVWUNNubbLfecWcuEm7WOUAPFpFZC2xinXNe0Rk
         tHYiqkhAhLdmuMaCQ6g/N/pLkJ/V2nEHYCo=
         -----END CERTIFICATE-----
-      node-key.pem: |
+      node-key.pem: |-
         -----BEGIN PRIVATE KEY-----
         MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDQrzbfGUNaZv8q
         L6GhyXDvaMOn5x/Kpw7+6zgz4+aRrTiDM1UF5v8XWAn+rQuX0GXodVm5yNVqQNWc
@@ -339,7 +339,7 @@ elasticsearch:
         +gIPeTFxumoPZiLmONaPFcMwAPWc2HKRlYNr627JKV6dKw2NX6BG+XFH+faYxgE1
         BA+h9/xFflf1jWlgqujURCc=
         -----END PRIVATE KEY-----
-      admin.pem: |
+      admin.pem: |-
         -----BEGIN CERTIFICATE-----
         MIIDRjCCAi4CCQDyEIckvjWSXzANBgkqhkiG9w0BAQsFADByMQswCQYDVQQGEwJj
         bjELMAkGA1UECAwCY3ExCzAJBgNVBAcMAmNxMQ4wDAYDVQQKDAVnZWVnYTENMAsG
@@ -360,7 +360,7 @@ elasticsearch:
         zk8u3IGo1PV7EC4sxg1jjjIOk6+/o3MErvsPdnSk/zAu4TMvsuvDKmyjK8kvHqpc
         tn36L3IKs7vgcqlp3U5xFeNc4Lzc+WgTLbY=
         -----END CERTIFICATE-----
-      admin-key.pem: |
+      admin-key.pem: |-
         -----BEGIN PRIVATE KEY-----
         MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDFNHnZYQ40/6Lh
         MmEy9g2zw7ipZXyFbOEWmTwiZUHdY97wXXFpHoIoUObkg3dX0dUf9HMXvbiQg5o2
@@ -635,7 +635,8 @@ elasticsearch:
     #              role: client
     podAnnotations: {}
 
-  config:
+  # https://github.com/opendistro-for-elasticsearch/sample-code/blob/main/open-distro-elasticsearch-kubernetes/elasticsearch/30-es-configmap.yml
+  config: |-
     cluster:
       name: ${CLUSTER_NAME}
     node:
@@ -646,13 +647,14 @@ elasticsearch:
     path.data: /usr/share/elasticsearch/data
     path.logs: /usr/share/elasticsearch/logs
     bootstrap.memory_lock: true
-    network.host: 0.0.0.0
+    network.host: ${NETWORK_HOST}
     http:
       enabled: ${HTTP_ENABLE}
       compression: true
       port: 9200
     discovery.seed_hosts: ${DISCOVERY_SERVICE}
     cluster.initial_master_nodes: ${DISCOVERY_SERVICE}
+    # cluster.routing.allocation.disk.threshold_enabled: false
     opendistro_security.ssl.transport.pemcert_filepath: node.pem
     opendistro_security.ssl.transport.pemkey_filepath: node-key.pem
     opendistro_security.ssl.transport.pemtrustedcas_filepath: node-root-ca.pem
@@ -673,58 +675,7 @@ elasticsearch:
     opendistro_security.restapi.roles_enabled: ["all_access", "security_rest_api_access"]
     opendistro_security.system_indices.enabled: true
     opendistro_security.system_indices.indices: [".opendistro-alerting-config", ".opendistro-alerting-alert*", ".opendistro-anomaly-results*", ".opendistro-anomaly-detector*", ".opendistro-anomaly-checkpoints", ".opendistro-anomaly-detection-state", ".opendistro-reports-*", ".opendistro-notifications-*", ".opendistro-notebooks", ".opendistro-asynchronous-search-response*"]
-    # cluster.routing.allocation.disk.threshold_enabled: false
 
-    ## Example Config
-    # opendistro_security.allow_unsafe_democertificates: false
-    # opendistro_security.allow_default_init_securityindex: true
-    # opendistro_security.audit.type: internal_elasticsearch
-    # opendistro_security.enable_snapshot_restore_privilege: true
-    # opendistro_security.check_snapshot_restore_write_privileges: true
-    # cluster.routing.allocation.disk.threshold_enabled: false
-    # opendistro_security.audit.config.disabled_rest_categories: NONE
-    # opendistro_security.audit.config.disabled_transport_categories: NONE
-    # cluster:
-    #   name: ${CLUSTER_NAME}
-    # node:
-    #   master: ${NODE_MASTER}
-    #   data: ${NODE_DATA}
-    #   name: ${NODE_NAME}
-    #   ingest: ${NODE_INGEST}
-    #   max_local_storage_nodes: 1
-    #   attr.box_type: hot
-
-    # processors: ${PROCESSORS:1}
-
-    # network.host: ${NETWORK_HOST}
-
-    # thread_pool.bulk.queue_size: 800
-
-    # path:
-    #   data: /usr/share/elasticsearch/data
-    #   logs: /usr/share/elasticsearch/logs
-
-    # http:
-    #   enabled: ${HTTP_ENABLE}
-    #   compression: true
-
-    # discovery:
-    #   zen:
-    #     ping.unicast.hosts: ${DISCOVERY_SERVICE}
-    #     minimum_master_nodes: ${NUMBER_OF_MASTERS}
-
-    # # TLS Configuration Transport Layer
-    # opendistro_security.ssl.transport.pemcert_filepath: elk-transport-crt.pem
-    # opendistro_security.ssl.transport.pemkey_filepath: elk-transport-key.pem
-    # opendistro_security.ssl.transport.pemtrustedcas_filepath: elk-transport-root-ca.pem
-    # opendistro_security.ssl.transport.enforce_hostname_verification: false
-
-    # # TLS Configuration REST Layer
-    # opendistro_security.ssl.http.enabled: true
-    # opendistro_security.ssl.http.pemcert_filepath: elk-rest-crt.pem
-    # opendistro_security.ssl.http.pemkey_filepath: elk-rest-key.pem
-    # opendistro_security.ssl.http.pemtrustedcas_filepath: elk-rest-root-ca.pem
-  
   log4jConfig: ""
 
   loggingConfig:
@@ -758,7 +709,7 @@ elasticsearch:
   imageTag: 1.13.2
   ## Specifies the image pull policy. Can be "Always" or "IfNotPresent" or "Never".
   ## Default to "Always".
-  imagePullPolicy: ""
+  imagePullPolicy: "IfNotPresent"
 
   configDirectory: /usr/share/elasticsearch/config
 
