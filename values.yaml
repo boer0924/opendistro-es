@@ -101,7 +101,7 @@ kibana:
     # https://www.elastic.co/guide/en/kibana/7.10/settings.html
     server.host: "0.0.0.0"
     server.port: 5601
-    elasticsearch.hosts: http://localhost:9200
+    elasticsearch.hosts: http://${ODFES_OPENDISTRO_ES_CLIENT_PORT_9200_TCP_ADDR}:9200
     elasticsearch.ssl.verificationMode: none
     elasticsearch.username: kibanaserver
     elasticsearch.password: Kibana@123
@@ -266,7 +266,7 @@ elasticsearch:
   ssl:
     enabled: true
     data:
-      node-root-ca:
+      node-root-ca.pem: |-
         -----BEGIN CERTIFICATE-----
         MIIDuTCCAqGgAwIBAgIJAP5t3QcZermfMA0GCSqGSIb3DQEBCwUAMHIxCzAJBgNV
         BAYTAmNuMQswCQYDVQQIDAJjcTELMAkGA1UEBwwCY3ExDjAMBgNVBAoMBWdlZWdh
@@ -289,7 +289,30 @@ elasticsearch:
         f6QesJ5SnTVNdo65UgHBpcb23c3pPc7jPMPE+6pFDGcLue/aeIlgZFORFw3GIj78
         kTn+aLMMvg5TDDn3VEvxzmdhn7apaGVzT7cWxmrmYEeJtG/rJWm/NUMZvlWm
         -----END CERTIFICATE-----
-      node:
+      admin-root-ca.pem: |-
+        -----BEGIN CERTIFICATE-----
+        MIIDuTCCAqGgAwIBAgIJAP5t3QcZermfMA0GCSqGSIb3DQEBCwUAMHIxCzAJBgNV
+        BAYTAmNuMQswCQYDVQQIDAJjcTELMAkGA1UEBwwCY3ExDjAMBgNVBAoMBWdlZWdh
+        MQ0wCwYDVQQLDARwYWFzMQwwCgYDVQQDDANzcmUxHDAaBgkqhkiG9w0BCQEWDWJv
+        ZXJAYm9lci54eXowIBcNMjExMTI1MDMwMTA0WhgPMjEyMTExMDEwMzAxMDRaMHIx
+        CzAJBgNVBAYTAmNuMQswCQYDVQQIDAJjcTELMAkGA1UEBwwCY3ExDjAMBgNVBAoM
+        BWdlZWdhMQ0wCwYDVQQLDARwYWFzMQwwCgYDVQQDDANzcmUxHDAaBgkqhkiG9w0B
+        CQEWDWJvZXJAYm9lci54eXowggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIB
+        AQC+XZ4ZZAEje9qvIKg634RTs6KFEfnzShuUUzmMn9a8EmmKf4DW5dCf+lKZPP+R
+        oDKWTe5FmUjB13ynCTd0ZC+hnnCfuoJ4C09+WBBVr8UQp4pLAxoiRjbWW93S9yDS
+        KH1Hr2UO+5h30AN2gggFp4p+1qdchREzvIZCAUqXz+iPwxOJw/LUe/0mHu1rMAf1
+        tS0c4etXw/ihf+EB8fNs/IPGt3vNxQgolH0G7lxxIst9arBHm9lrzfIIFIEwzfTQ
+        SvR6gKSXY+OHlaRDXXKdzLILFVW3KXsW+EvvWS2d7A4ZhIPb7faENoqJCGrTrceR
+        ZX2/DrTl4mvg1pqP4Jsv3hahAgMBAAGjUDBOMB0GA1UdDgQWBBSZSVqkuG2LkHRN
+        svJtQRXhKy34UTAfBgNVHSMEGDAWgBSZSVqkuG2LkHRNsvJtQRXhKy34UTAMBgNV
+        HRMEBTADAQH/MA0GCSqGSIb3DQEBCwUAA4IBAQB8izFhnuBh+rRqn+YmyJ9JV3wy
+        v1AmwbY7FBr6qnrMoNZ8cdgqzgJtAB/727hKofPJUBbH9N6+pJaf4UE5PY9SBDkT
+        a99oQDYuI3z+yPn0QyA5LC0ngO1sC+fFQp5i0bChhGKetbMy0ZFRgaU8k+8JysMh
+        zat01S32MeMBlzorLN9ZWVwb1WB+3jZvfpj25aQbxj318OX7Q+Y9x2O7YnUtF1WH
+        f6QesJ5SnTVNdo65UgHBpcb23c3pPc7jPMPE+6pFDGcLue/aeIlgZFORFw3GIj78
+        kTn+aLMMvg5TDDn3VEvxzmdhn7apaGVzT7cWxmrmYEeJtG/rJWm/NUMZvlWm
+        -----END CERTIFICATE-----
+      node.pem: |-
         -----BEGIN CERTIFICATE-----
         MIIDRjCCAi4CCQDyEIckvjWSYDANBgkqhkiG9w0BAQsFADByMQswCQYDVQQGEwJj
         bjELMAkGA1UECAwCY3ExCzAJBgNVBAcMAmNxMQ4wDAYDVQQKDAVnZWVnYTENMAsG
@@ -310,7 +333,7 @@ elasticsearch:
         YPO0N3uBJPnvmykIdYygMtetffVWUNNubbLfecWcuEm7WOUAPFpFZC2xinXNe0Rk
         tHYiqkhAhLdmuMaCQ6g/N/pLkJ/V2nEHYCo=
         -----END CERTIFICATE-----
-      node-key:
+      node-key.pem: |-
         -----BEGIN PRIVATE KEY-----
         MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDQrzbfGUNaZv8q
         L6GhyXDvaMOn5x/Kpw7+6zgz4+aRrTiDM1UF5v8XWAn+rQuX0GXodVm5yNVqQNWc
@@ -339,30 +362,7 @@ elasticsearch:
         +gIPeTFxumoPZiLmONaPFcMwAPWc2HKRlYNr627JKV6dKw2NX6BG+XFH+faYxgE1
         BA+h9/xFflf1jWlgqujURCc=
         -----END PRIVATE KEY-----
-      admin-root-ca:
-        -----BEGIN CERTIFICATE-----
-        MIIDuTCCAqGgAwIBAgIJAP5t3QcZermfMA0GCSqGSIb3DQEBCwUAMHIxCzAJBgNV
-        BAYTAmNuMQswCQYDVQQIDAJjcTELMAkGA1UEBwwCY3ExDjAMBgNVBAoMBWdlZWdh
-        MQ0wCwYDVQQLDARwYWFzMQwwCgYDVQQDDANzcmUxHDAaBgkqhkiG9w0BCQEWDWJv
-        ZXJAYm9lci54eXowIBcNMjExMTI1MDMwMTA0WhgPMjEyMTExMDEwMzAxMDRaMHIx
-        CzAJBgNVBAYTAmNuMQswCQYDVQQIDAJjcTELMAkGA1UEBwwCY3ExDjAMBgNVBAoM
-        BWdlZWdhMQ0wCwYDVQQLDARwYWFzMQwwCgYDVQQDDANzcmUxHDAaBgkqhkiG9w0B
-        CQEWDWJvZXJAYm9lci54eXowggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIB
-        AQC+XZ4ZZAEje9qvIKg634RTs6KFEfnzShuUUzmMn9a8EmmKf4DW5dCf+lKZPP+R
-        oDKWTe5FmUjB13ynCTd0ZC+hnnCfuoJ4C09+WBBVr8UQp4pLAxoiRjbWW93S9yDS
-        KH1Hr2UO+5h30AN2gggFp4p+1qdchREzvIZCAUqXz+iPwxOJw/LUe/0mHu1rMAf1
-        tS0c4etXw/ihf+EB8fNs/IPGt3vNxQgolH0G7lxxIst9arBHm9lrzfIIFIEwzfTQ
-        SvR6gKSXY+OHlaRDXXKdzLILFVW3KXsW+EvvWS2d7A4ZhIPb7faENoqJCGrTrceR
-        ZX2/DrTl4mvg1pqP4Jsv3hahAgMBAAGjUDBOMB0GA1UdDgQWBBSZSVqkuG2LkHRN
-        svJtQRXhKy34UTAfBgNVHSMEGDAWgBSZSVqkuG2LkHRNsvJtQRXhKy34UTAMBgNV
-        HRMEBTADAQH/MA0GCSqGSIb3DQEBCwUAA4IBAQB8izFhnuBh+rRqn+YmyJ9JV3wy
-        v1AmwbY7FBr6qnrMoNZ8cdgqzgJtAB/727hKofPJUBbH9N6+pJaf4UE5PY9SBDkT
-        a99oQDYuI3z+yPn0QyA5LC0ngO1sC+fFQp5i0bChhGKetbMy0ZFRgaU8k+8JysMh
-        zat01S32MeMBlzorLN9ZWVwb1WB+3jZvfpj25aQbxj318OX7Q+Y9x2O7YnUtF1WH
-        f6QesJ5SnTVNdo65UgHBpcb23c3pPc7jPMPE+6pFDGcLue/aeIlgZFORFw3GIj78
-        kTn+aLMMvg5TDDn3VEvxzmdhn7apaGVzT7cWxmrmYEeJtG/rJWm/NUMZvlWm
-        -----END CERTIFICATE-----
-      admin:
+      admin.pem: |-
         -----BEGIN CERTIFICATE-----
         MIIDRjCCAi4CCQDyEIckvjWSXzANBgkqhkiG9w0BAQsFADByMQswCQYDVQQGEwJj
         bjELMAkGA1UECAwCY3ExCzAJBgNVBAcMAmNxMQ4wDAYDVQQKDAVnZWVnYTENMAsG
@@ -383,7 +383,7 @@ elasticsearch:
         zk8u3IGo1PV7EC4sxg1jjjIOk6+/o3MErvsPdnSk/zAu4TMvsuvDKmyjK8kvHqpc
         tn36L3IKs7vgcqlp3U5xFeNc4Lzc+WgTLbY=
         -----END CERTIFICATE-----
-      admin-key:
+      admin-key.pem: |-
         -----BEGIN PRIVATE KEY-----
         MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDFNHnZYQ40/6Lh
         MmEy9g2zw7ipZXyFbOEWmTwiZUHdY97wXXFpHoIoUObkg3dX0dUf9HMXvbiQg5o2
@@ -660,23 +660,14 @@ elasticsearch:
 
   # https://github.com/opendistro-for-elasticsearch/sample-code/blob/main/open-distro-elasticsearch-kubernetes/elasticsearch/30-es-configmap.yml
   config:
-    cluster:
-      name: ${CLUSTER_NAME}
-    node:
-      name: ${NODE_NAME}
-      master: ${NODE_MASTER}
-      data: ${NODE_DATA}
-      ingest: ${NODE_INGEST}
+    cluster.name: ${CLUSTER_NAME}
+    node.name: ${NODE_NAME}
     path.data: /usr/share/elasticsearch/data
     path.logs: /usr/share/elasticsearch/logs
-    bootstrap.memory_lock: true
     network.host: ${NETWORK_HOST}
-    http:
-      enabled: true
-      compression: true
-      port: 9200
+    http.compression: true
     discovery.seed_hosts: ${DISCOVERY_SERVICE}
-    cluster.initial_master_nodes: ${DISCOVERY_SERVICE}
+    cluster.initial_master_nodes: ${INITIAL-MASTER-NODES}
     # cluster.routing.allocation.disk.threshold_enabled: false
     opendistro_security.ssl.transport.pemcert_filepath: node.pem
     opendistro_security.ssl.transport.pemkey_filepath: node-key.pem
@@ -698,6 +689,7 @@ elasticsearch:
     opendistro_security.restapi.roles_enabled:
       ["all_access", "security_rest_api_access"]
     opendistro_security.system_indices.enabled: true
+    opendistro_security.audit.ignore_users: ["kibanaserver"]
     opendistro_security.system_indices.indices:
       [
         ".opendistro-alerting-config",

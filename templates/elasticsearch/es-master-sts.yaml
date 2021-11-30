@@ -99,8 +99,8 @@ spec:
         env:
         - name: CLUSTER_NAME
           value: {{ .Values.global.clusterName }}
-        # - name: DISCOVERY_SERVICE
-        #   value: {{ template "initial-master-nodes" . }}
+        - name: INITIAL-MASTER-NODES
+          value: {{ template "initial-master-nodes" . }}
         - name: NODE_MASTER
           value: "true"
         - name: NODE_INGEST
