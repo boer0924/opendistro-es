@@ -97,25 +97,25 @@ spec:
             add: ["SYS_CHROOT"]
 {{- end }}
         env:
-        - name: cluster.name
+        - name: CLUSTER_NAME
           value: {{ .Values.global.clusterName }}
-        - name: cluster.initial_master_nodes
-          value: {{ template "initial-master-nodes" . }}
-        - name: node.master
+        # - name: DISCOVERY_SERVICE
+        #   value: {{ template "initial-master-nodes" . }}
+        - name: NODE_MASTER
           value: "true"
-        - name: node.ingest
+        - name: NODE_INGEST
         {{- if .Values.elasticsearch.client.dedicatedPod.enabled }}
           value: "false"
         {{- else }}
           value: "true"
         {{- end }}
-        - name: node.data
+        - name: NODE_DATA
         {{- if .Values.elasticsearch.data.dedicatedPod.enabled }}
           value: "false"
         {{- else }}
           value: "true"
         {{- end }}
-        - name: network.host
+        - name: NETWORK_HOST
           value: "0.0.0.0"
     {{- if .Values.elasticsearch.transportKeyPassphrase.enabled}}
         - name: TRANSPORT_KEY_PASSPHRASE
@@ -125,11 +125,11 @@ spec:
         - name: SSL_KEY_PASSPHRASE
           value: {{ .Values.elasticsearch.sslKeyPassphrase.passPhrase }}
     {{- end }}
-        - name: node.name
+        - name: NODE_NAME
           valueFrom:
             fieldRef:
               fieldPath: metadata.name
-        - name: discovery.seed_hosts
+        - name: DISCOVERY_SERVICE
           value: {{ template "opendistro-es.fullname" . }}-discovery
         - name: KUBERNETES_NAMESPACE
           valueFrom:

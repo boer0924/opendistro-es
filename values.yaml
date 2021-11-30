@@ -97,7 +97,7 @@ kibana:
     type: ClusterIP
     annotations: {}
 
-  config: |-
+  config:
     # https://www.elastic.co/guide/en/kibana/7.10/settings.html
     server.host: "0.0.0.0"
     server.port: 5601
@@ -197,7 +197,7 @@ elasticsearch:
     config:
       securityConfigSecret:
       data:
-        internal_users.yml: |-
+        internal_users.yml:
           # This is the internal user database
           # The hash value is a bcrypt hash and can be generated with plugin/tools/hash.sh
 
@@ -217,10 +217,10 @@ elasticsearch:
             hash: "$2y$12$kNZy07fzILhK7XVLeoPStOMbMoPL5ftiib4J5Vl.hAHiIDMvFvHPa"
             reserved: true
             description: "the kibanaserver user Kibana@123"
-       # config.yml: |-
-       # roles.yml: |-
-       # rolesMapping.yml: |-
-       # tenants.yml: |-
+       # config.yml:
+       # roles.yml:
+       # rolesMapping.yml:
+       # tenants.yml:
 
 
   ## securityContext to apply to the pod. Allows for running as non-root
@@ -266,7 +266,7 @@ elasticsearch:
   ssl:
     enabled: true
     data:
-      es-root-ca.pem: |-
+      node-root-ca.pem:
         -----BEGIN CERTIFICATE-----
         MIIDuTCCAqGgAwIBAgIJAP5t3QcZermfMA0GCSqGSIb3DQEBCwUAMHIxCzAJBgNV
         BAYTAmNuMQswCQYDVQQIDAJjcTELMAkGA1UEBwwCY3ExDjAMBgNVBAoMBWdlZWdh
@@ -289,7 +289,7 @@ elasticsearch:
         f6QesJ5SnTVNdo65UgHBpcb23c3pPc7jPMPE+6pFDGcLue/aeIlgZFORFw3GIj78
         kTn+aLMMvg5TDDn3VEvxzmdhn7apaGVzT7cWxmrmYEeJtG/rJWm/NUMZvlWm
         -----END CERTIFICATE-----
-      node.pem: |-
+      node.pem:
         -----BEGIN CERTIFICATE-----
         MIIDRjCCAi4CCQDyEIckvjWSYDANBgkqhkiG9w0BAQsFADByMQswCQYDVQQGEwJj
         bjELMAkGA1UECAwCY3ExCzAJBgNVBAcMAmNxMQ4wDAYDVQQKDAVnZWVnYTENMAsG
@@ -310,7 +310,7 @@ elasticsearch:
         YPO0N3uBJPnvmykIdYygMtetffVWUNNubbLfecWcuEm7WOUAPFpFZC2xinXNe0Rk
         tHYiqkhAhLdmuMaCQ6g/N/pLkJ/V2nEHYCo=
         -----END CERTIFICATE-----
-      node-key.pem: |-
+      node-key.pem:
         -----BEGIN PRIVATE KEY-----
         MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDQrzbfGUNaZv8q
         L6GhyXDvaMOn5x/Kpw7+6zgz4+aRrTiDM1UF5v8XWAn+rQuX0GXodVm5yNVqQNWc
@@ -339,7 +339,30 @@ elasticsearch:
         +gIPeTFxumoPZiLmONaPFcMwAPWc2HKRlYNr627JKV6dKw2NX6BG+XFH+faYxgE1
         BA+h9/xFflf1jWlgqujURCc=
         -----END PRIVATE KEY-----
-      admin.pem: |-
+      admin-root-ca.pem:
+        -----BEGIN CERTIFICATE-----
+        MIIDuTCCAqGgAwIBAgIJAP5t3QcZermfMA0GCSqGSIb3DQEBCwUAMHIxCzAJBgNV
+        BAYTAmNuMQswCQYDVQQIDAJjcTELMAkGA1UEBwwCY3ExDjAMBgNVBAoMBWdlZWdh
+        MQ0wCwYDVQQLDARwYWFzMQwwCgYDVQQDDANzcmUxHDAaBgkqhkiG9w0BCQEWDWJv
+        ZXJAYm9lci54eXowIBcNMjExMTI1MDMwMTA0WhgPMjEyMTExMDEwMzAxMDRaMHIx
+        CzAJBgNVBAYTAmNuMQswCQYDVQQIDAJjcTELMAkGA1UEBwwCY3ExDjAMBgNVBAoM
+        BWdlZWdhMQ0wCwYDVQQLDARwYWFzMQwwCgYDVQQDDANzcmUxHDAaBgkqhkiG9w0B
+        CQEWDWJvZXJAYm9lci54eXowggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIB
+        AQC+XZ4ZZAEje9qvIKg634RTs6KFEfnzShuUUzmMn9a8EmmKf4DW5dCf+lKZPP+R
+        oDKWTe5FmUjB13ynCTd0ZC+hnnCfuoJ4C09+WBBVr8UQp4pLAxoiRjbWW93S9yDS
+        KH1Hr2UO+5h30AN2gggFp4p+1qdchREzvIZCAUqXz+iPwxOJw/LUe/0mHu1rMAf1
+        tS0c4etXw/ihf+EB8fNs/IPGt3vNxQgolH0G7lxxIst9arBHm9lrzfIIFIEwzfTQ
+        SvR6gKSXY+OHlaRDXXKdzLILFVW3KXsW+EvvWS2d7A4ZhIPb7faENoqJCGrTrceR
+        ZX2/DrTl4mvg1pqP4Jsv3hahAgMBAAGjUDBOMB0GA1UdDgQWBBSZSVqkuG2LkHRN
+        svJtQRXhKy34UTAfBgNVHSMEGDAWgBSZSVqkuG2LkHRNsvJtQRXhKy34UTAMBgNV
+        HRMEBTADAQH/MA0GCSqGSIb3DQEBCwUAA4IBAQB8izFhnuBh+rRqn+YmyJ9JV3wy
+        v1AmwbY7FBr6qnrMoNZ8cdgqzgJtAB/727hKofPJUBbH9N6+pJaf4UE5PY9SBDkT
+        a99oQDYuI3z+yPn0QyA5LC0ngO1sC+fFQp5i0bChhGKetbMy0ZFRgaU8k+8JysMh
+        zat01S32MeMBlzorLN9ZWVwb1WB+3jZvfpj25aQbxj318OX7Q+Y9x2O7YnUtF1WH
+        f6QesJ5SnTVNdo65UgHBpcb23c3pPc7jPMPE+6pFDGcLue/aeIlgZFORFw3GIj78
+        kTn+aLMMvg5TDDn3VEvxzmdhn7apaGVzT7cWxmrmYEeJtG/rJWm/NUMZvlWm
+        -----END CERTIFICATE-----
+      admin.pem:
         -----BEGIN CERTIFICATE-----
         MIIDRjCCAi4CCQDyEIckvjWSXzANBgkqhkiG9w0BAQsFADByMQswCQYDVQQGEwJj
         bjELMAkGA1UECAwCY3ExCzAJBgNVBAcMAmNxMQ4wDAYDVQQKDAVnZWVnYTENMAsG
@@ -360,7 +383,7 @@ elasticsearch:
         zk8u3IGo1PV7EC4sxg1jjjIOk6+/o3MErvsPdnSk/zAu4TMvsuvDKmyjK8kvHqpc
         tn36L3IKs7vgcqlp3U5xFeNc4Lzc+WgTLbY=
         -----END CERTIFICATE-----
-      admin-key.pem: |-
+      admin-key.pem:
         -----BEGIN PRIVATE KEY-----
         MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDFNHnZYQ40/6Lh
         MmEy9g2zw7ipZXyFbOEWmTwiZUHdY97wXXFpHoIoUObkg3dX0dUf9HMXvbiQg5o2
@@ -636,7 +659,7 @@ elasticsearch:
     podAnnotations: {}
 
   # https://github.com/opendistro-for-elasticsearch/sample-code/blob/main/open-distro-elasticsearch-kubernetes/elasticsearch/30-es-configmap.yml
-  config: |-
+  config:
     cluster:
       name: ${CLUSTER_NAME}
     node:
@@ -649,7 +672,7 @@ elasticsearch:
     bootstrap.memory_lock: true
     network.host: ${NETWORK_HOST}
     http:
-      enabled: ${HTTP_ENABLE}
+      enabled: true
       compression: true
       port: 9200
     discovery.seed_hosts: ${DISCOVERY_SERVICE}
@@ -672,9 +695,22 @@ elasticsearch:
     opendistro_security.audit.type: internal_elasticsearch
     opendistro_security.enable_snapshot_restore_privilege: true
     opendistro_security.check_snapshot_restore_write_privileges: true
-    opendistro_security.restapi.roles_enabled: ["all_access", "security_rest_api_access"]
+    opendistro_security.restapi.roles_enabled:
+      ["all_access", "security_rest_api_access"]
     opendistro_security.system_indices.enabled: true
-    opendistro_security.system_indices.indices: [".opendistro-alerting-config", ".opendistro-alerting-alert*", ".opendistro-anomaly-results*", ".opendistro-anomaly-detector*", ".opendistro-anomaly-checkpoints", ".opendistro-anomaly-detection-state", ".opendistro-reports-*", ".opendistro-notifications-*", ".opendistro-notebooks", ".opendistro-asynchronous-search-response*"]
+    opendistro_security.system_indices.indices:
+      [
+        ".opendistro-alerting-config",
+        ".opendistro-alerting-alert*",
+        ".opendistro-anomaly-results*",
+        ".opendistro-anomaly-detector*",
+        ".opendistro-anomaly-checkpoints",
+        ".opendistro-anomaly-detection-state",
+        ".opendistro-reports-*",
+        ".opendistro-notifications-*",
+        ".opendistro-notebooks",
+        ".opendistro-asynchronous-search-response*",
+      ]
 
   log4jConfig: ""
 
