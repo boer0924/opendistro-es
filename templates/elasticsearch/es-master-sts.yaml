@@ -220,6 +220,11 @@ spec:
           name: admin-certs
           subPath: {{ .Values.elasticsearch.ssl.admin.existingCertSecretRootCASubPath }}
         {{- end }}
+        {{- if .Values.elasticsearch.performanceAnalyzerconfig.enabled }}
+        - mountPath: /usr/share/elasticsearch/plugins/opendistro-performance-analyzer/pa_config/performance-analyzer.properties
+          name: performance-analyzer-config
+          subPath: performance-analyzer.properties
+        {{- end }}
         {{- if .Values.elasticsearch.securityConfig.enabled }}
         {{- if .Values.elasticsearch.securityConfig.actionGroupsSecret }}
         - mountPath: {{ .Values.elasticsearch.securityConfig.path }}/action_groups.yml
@@ -284,10 +289,16 @@ spec:
           # secretName: {{ .Values.elasticsearch.ssl.admin.existingCertSecret }}
           secretName: {{ template "opendistro-es.fullname" . }}-es-tls
       {{- end }}
+      {{- if .Values.elasticsearch.performanceAnalyzerconfig.enabled }}
+      - name: performance-analyzer-config
+        secret:
+          secretName: {{ template "opendistro-es.fullname" . }}-es-pa
+      {{- end }}
       {{- if and .Values.elasticsearch.securityConfig.config.securityConfigSecret .Values.elasticsearch.securityConfig.config.data }}
       - name: security-config
         secret:
-          secretName: {{ .Values.elasticsearch.securityConfig.config.securityConfigSecret }}
+          # secretName: {{ .Values.elasticsearch.securityConfig.config.securityConfigSecret }}
+          secretName: {{ template "opendistro-es.fullname" . }}-es-securityconfig
       {{- end }}
       {{- if .Values.elasticsearch.securityConfig.actionGroupsSecret }}
       - name: action-groups
@@ -302,7 +313,8 @@ spec:
       {{- if .Values.elasticsearch.securityConfig.internalUsersSecret }}
       - name: internal-users-config
         secret:
-          secretName: {{ .Values.elasticsearch.securityConfig.internalUsersSecret }}
+          # secretName: {{ .Values.elasticsearch.securityConfig.internalUsersSecret }}
+          secretName: {{ template "opendistro-es.fullname" . }}-es-internalusers
       {{- end }}
       {{- if .Values.elasticsearch.securityConfig.rolesSecret }}
       - name: roles

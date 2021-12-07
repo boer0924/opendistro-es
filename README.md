@@ -17,6 +17,25 @@ permissions and limitations under the License.
 This chart installs [Opendistro Kibana](https://opendistro.github.io/for-elasticsearch-docs/docs/kibana/) + [Opendistro Elasticsearch](https://opendistro.github.io/for-elasticsearch-docs/docs/elasticsearch/) with configurable TLS, RBAC, and more.
 Due to the uniqueness of different users environments, this chart aims to cater to a number of different use cases and setups.
 
+## 应用Security配置
+```bash
+chmod u+x /usr/share/elasticsearch/plugins/opendistro_security/tools/securityadmin.sh && \
+/usr/share/elasticsearch/plugins/opendistro_security/tools/securityadmin.sh \
+-cacert /usr/share/elasticsearch/config/admin-root-ca.pem \
+-cert /usr/share/elasticsearch/config/admin.pem \
+-key /usr/share/elasticsearch/config/admin-key.pem \
+-cd /usr/share/elasticsearch/plugins/opendistro_security/securityconfig/ \
+-nhnv -icl
+
+# performanceAnalyzer
+opendistro-perf-top-linux --endpoint 172.16.5.57 --dashboard ClusterOverview
+opendistro-perf-top-linux --endpoint 172.16.5.57 --dashboard ClusterNetworkMemoryAnalysis
+opendistro-perf-top-linux --endpoint 172.16.5.57 --dashboard ClusterThreadAnalysis
+opendistro-perf-top-linux --endpoint 172.16.5.57 --dashboard NodeAnalysis --nodename pacheck-opendistro-es-master-0
+opendistro-perf-top-linux --endpoint 172.16.5.57 --dashboard NodeAnalysis --nodename pacheck-opendistro-es-master-1
+opendistro-perf-top-linux --endpoint 172.16.5.57 --dashboard NodeAnalysis --nodename pacheck-opendistro-es-master-2
+```
+
 ## TL;DR
 ```
 ❯ helm package .

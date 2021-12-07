@@ -183,12 +183,44 @@ elasticsearch:
   ## Used when deploying hot/warm architecture. Allows second aliased deployment to find cluster.
   ## Default {{ template opendistro-es.fullname }}-discovery.
   discoveryOverride: ""
+  performanceAnalyzerconfig:
+    enabled: true
+    data:
+      PAProperties: |
+        metrics-location = /dev/shm/performanceanalyzer/
+        metrics-deletion-interval = 1
+        cleanup-metrics-db-files = true
+        webservice-bind-host = 0.0.0.0
+        webservice-listener-port = 9600
+        rpc-port = 9650
+        metrics-db-file-prefix-path = /tmp/metricsdb_
+        https-enabled = false
+        certificate-file-path = specify_path
+        private-key-file-path = specify_path
+        plugin-stats-metadata = plugin-stats-metadata
+        agent-stats-metadata = agent-stats-metadata
   securityConfig:
     enabled: true
     path: "/usr/share/elasticsearch/plugins/opendistro_security/securityconfig"
     actionGroupsSecret:
     configSecret:
     internalUsersSecret:
+      # This is the internal user database
+      # The hash value is a bcrypt hash and can be generated with plugin/tools/hash.sh
+      _meta:
+        type: "internalusers"
+        config_version: 2
+      # Define your internal users here
+      admin:
+        hash: "$2y$12$xq87L.6NOPJAnrfH2p54j.KFIGE5Aod7m9BwjU6Tw.W6pBs3FcDBm"
+        reserved: true
+        backend_roles:
+        - "admin"
+        description: "super admin user Elastic@123"
+      kibanaserver:
+        hash: "$2y$12$kNZy07fzILhK7XVLeoPStOMbMoPL5ftiib4J5Vl.hAHiIDMvFvHPa"
+        reserved: true
+        description: "the kibanaserver user Kibana@123"
     rolesSecret:
     rolesMappingSecret:
     tenantsSecret:
@@ -196,31 +228,12 @@ elasticsearch:
     #Note that this is an alternative to the above secrets and shouldn't be used if the above secrets are used
     config:
       securityConfigSecret:
-      data:
-        internal_users.yml:
-          # This is the internal user database
-          # The hash value is a bcrypt hash and can be generated with plugin/tools/hash.sh
-
-          _meta:
-            type: "internalusers"
-            config_version: 2
-
-          # Define your internal users here
-          admin:
-            hash: "$2y$12$xq87L.6NOPJAnrfH2p54j.KFIGE5Aod7m9BwjU6Tw.W6pBs3FcDBm"
-            reserved: true
-            backend_roles:
-            - "admin"
-            description: "super admin user Elastic@123"
-
-          kibanaserver:
-            hash: "$2y$12$kNZy07fzILhK7XVLeoPStOMbMoPL5ftiib4J5Vl.hAHiIDMvFvHPa"
-            reserved: true
-            description: "the kibanaserver user Kibana@123"
-       # config.yml:
-       # roles.yml:
-       # rolesMapping.yml:
-       # tenants.yml:
+      data: {}
+        # internal_users.yml:
+        # config.yml:
+        # roles.yml:
+        # rolesMapping.yml:
+        # tenants.yml:
 
 
   ## securityContext to apply to the pod. Allows for running as non-root
@@ -266,7 +279,7 @@ elasticsearch:
   ssl:
     enabled: true
     data:
-      node-root-ca.pem: |-
+      node-root-ca.pem: |
         -----BEGIN CERTIFICATE-----
         MIIDuTCCAqGgAwIBAgIJAP5t3QcZermfMA0GCSqGSIb3DQEBCwUAMHIxCzAJBgNV
         BAYTAmNuMQswCQYDVQQIDAJjcTELMAkGA1UEBwwCY3ExDjAMBgNVBAoMBWdlZWdh
@@ -289,7 +302,7 @@ elasticsearch:
         f6QesJ5SnTVNdo65UgHBpcb23c3pPc7jPMPE+6pFDGcLue/aeIlgZFORFw3GIj78
         kTn+aLMMvg5TDDn3VEvxzmdhn7apaGVzT7cWxmrmYEeJtG/rJWm/NUMZvlWm
         -----END CERTIFICATE-----
-      admin-root-ca.pem: |-
+      admin-root-ca.pem: |
         -----BEGIN CERTIFICATE-----
         MIIDuTCCAqGgAwIBAgIJAP5t3QcZermfMA0GCSqGSIb3DQEBCwUAMHIxCzAJBgNV
         BAYTAmNuMQswCQYDVQQIDAJjcTELMAkGA1UEBwwCY3ExDjAMBgNVBAoMBWdlZWdh
@@ -312,7 +325,7 @@ elasticsearch:
         f6QesJ5SnTVNdo65UgHBpcb23c3pPc7jPMPE+6pFDGcLue/aeIlgZFORFw3GIj78
         kTn+aLMMvg5TDDn3VEvxzmdhn7apaGVzT7cWxmrmYEeJtG/rJWm/NUMZvlWm
         -----END CERTIFICATE-----
-      node.pem: |-
+      node.pem: |
         -----BEGIN CERTIFICATE-----
         MIIDRjCCAi4CCQDyEIckvjWSYDANBgkqhkiG9w0BAQsFADByMQswCQYDVQQGEwJj
         bjELMAkGA1UECAwCY3ExCzAJBgNVBAcMAmNxMQ4wDAYDVQQKDAVnZWVnYTENMAsG
@@ -333,7 +346,7 @@ elasticsearch:
         YPO0N3uBJPnvmykIdYygMtetffVWUNNubbLfecWcuEm7WOUAPFpFZC2xinXNe0Rk
         tHYiqkhAhLdmuMaCQ6g/N/pLkJ/V2nEHYCo=
         -----END CERTIFICATE-----
-      node-key.pem: |-
+      node-key.pem: |
         -----BEGIN PRIVATE KEY-----
         MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDQrzbfGUNaZv8q
         L6GhyXDvaMOn5x/Kpw7+6zgz4+aRrTiDM1UF5v8XWAn+rQuX0GXodVm5yNVqQNWc
@@ -362,7 +375,7 @@ elasticsearch:
         +gIPeTFxumoPZiLmONaPFcMwAPWc2HKRlYNr627JKV6dKw2NX6BG+XFH+faYxgE1
         BA+h9/xFflf1jWlgqujURCc=
         -----END PRIVATE KEY-----
-      admin.pem: |-
+      admin.pem: |
         -----BEGIN CERTIFICATE-----
         MIIDRjCCAi4CCQDyEIckvjWSXzANBgkqhkiG9w0BAQsFADByMQswCQYDVQQGEwJj
         bjELMAkGA1UECAwCY3ExCzAJBgNVBAcMAmNxMQ4wDAYDVQQKDAVnZWVnYTENMAsG
@@ -383,7 +396,7 @@ elasticsearch:
         zk8u3IGo1PV7EC4sxg1jjjIOk6+/o3MErvsPdnSk/zAu4TMvsuvDKmyjK8kvHqpc
         tn36L3IKs7vgcqlp3U5xFeNc4Lzc+WgTLbY=
         -----END CERTIFICATE-----
-      admin-key.pem: |-
+      admin-key.pem: |
         -----BEGIN PRIVATE KEY-----
         MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDFNHnZYQ40/6Lh
         MmEy9g2zw7ipZXyFbOEWmTwiZUHdY97wXXFpHoIoUObkg3dX0dUf9HMXvbiQg5o2
@@ -459,10 +472,11 @@ elasticsearch:
       ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
       ##   GKE, AWS & OpenStack)
       ##
-      storageClass: "managed-nfs-storage"
+      # storageClass: "managed-nfs-storage"
+      storageClass: "sc-rook-ceph"
       accessModes:
         - ReadWriteOnce
-      size: 10Gi
+      size: 1Gi
       annotations: {}
 
     resources: {}
