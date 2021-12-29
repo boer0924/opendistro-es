@@ -29,4 +29,5 @@ spec:
   clusterIP: None
   selector:
     role: master
+{{ include "opendistro-es.labels.selector" . | indent 4 }}
 {{- end }}

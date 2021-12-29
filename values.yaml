@@ -13,7 +13,7 @@
 
 kibana:
   enabled: true
-  image: amazon/opendistro-for-elasticsearch-kibana
+  image: 3rdparty/opendistro-for-elasticsearch-kibana
   imageTag: 1.13.2
   ## Specifies the image pull policy. Can be "Always" or "IfNotPresent" or "Never".
   ## Default to "Always".
@@ -171,7 +171,7 @@ global:
     enabled: true
 
   # Optionally override the docker registry to use for images
-  imageRegistry: docker.io
+  imageRegistry: y2-harbor.geega.com:31104
 
   ## Optionally specify an array of imagePullSecrets.
   ## Secrets must be manually created in the namespace.
@@ -180,6 +180,10 @@ global:
 
 
 elasticsearch:
+  exporter:
+    # if your change es default password, remember edit templates/elasticsearch/es-exporter.yaml replace the old password.
+    enabled: true
+    image: 10.113.75.156:31104/3rdparty/elasticsearch_exporter:1.3.0
   ## Used when deploying hot/warm architecture. Allows second aliased deployment to find cluster.
   ## Default {{ template opendistro-es.fullname }}-discovery.
   discoveryOverride: ""
@@ -259,8 +263,8 @@ elasticsearch:
   #   readOnly: true
 
   initContainer:
-    image: busybox
-    imageTag: 1.27.2
+    image: paas/busybox
+    imageTag: latest
 
   ## Set optimal sysctl's. This requires privilege. Can be disabled if
   ## the system has already been preconfigured.
@@ -473,20 +477,20 @@ elasticsearch:
       ##   GKE, AWS & OpenStack)
       ##
       # storageClass: "managed-nfs-storage"
-      storageClass: "sc-rook-ceph"
+      storageClass: "cbs-high-csi-retain"
       accessModes:
         - ReadWriteOnce
-      size: 1Gi
+      size: 200Gi
       annotations: {}
 
-    resources: {}
-    #  limits:
-    #    cpu: 1
-    #    memory: 1024Mi
-    #  requests:
-    #    cpu: 200m
-    #    memory: 1024Mi
-    javaOpts: "-Xms512m -Xmx512m"
+    resources:
+      limits:
+        cpu: 2
+        memory: 4096Mi
+      requests:
+        cpu: 2
+        memory: 4096Mi
+    javaOpts: "-Xms2048m -Xmx2048m"
     podDisruptionBudget:
       enabled: false
       minAvailable: 1
@@ -747,7 +751,7 @@ elasticsearch:
 
   maxMapCount: 262144
 
-  image: amazon/opendistro-for-elasticsearch
+  image: 3rdparty/opendistro-for-elasticsearch
   imageTag: 1.13.2
   ## Specifies the image pull policy. Can be "Always" or "IfNotPresent" or "Never".
   ## Default to "Always".
