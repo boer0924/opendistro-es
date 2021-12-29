@@ -49,7 +49,7 @@ spec:
             - --es.uri=http://admin:Elastic%40123@{{ template "opendistro-es.fullname" . }}-client:9200
             - --es.all
             - --es.ssl-skip-verify
-          image: {{ .Values.elasticsearch.exporter.image }}
+          image: {{ .Values.global.imageRegistry }}/{{ .Values.elasticsearch.exporter.image }}:{{ .Values.elasticsearch.exporter.imageTag }}
           securityContext:
             capabilities:
               drop:

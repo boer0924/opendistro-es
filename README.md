@@ -17,6 +17,44 @@ permissions and limitations under the License.
 This chart installs [Opendistro Kibana](https://opendistro.github.io/for-elasticsearch-docs/docs/kibana/) + [Opendistro Elasticsearch](https://opendistro.github.io/for-elasticsearch-docs/docs/elasticsearch/) with configurable TLS, RBAC, and more.
 Due to the uniqueness of different users environments, this chart aims to cater to a number of different use cases and setups.
 
+## 镜像
+imageRegistry: y2-harbor.boer.xyz:31104
+
+- kibana: 3rdparty/opendistro-for-elasticsearch-kibana:1.13.2
+- exporter: 3rdparty/elasticsearch_exporter:1.3.0
+- busybox: paas/busybox:latest
+- elasticsearch: 3rdparty/opendistro-for-elasticsearch:1.13.2
+
+## 亲和性
+- nodeSelector
+- tolerations
+- affinity
+
+## 资源配额
+```yaml
+    resources:
+      limits:
+        cpu: 2
+        memory: 4096Mi
+      requests:
+        cpu: 2
+        memory: 4096Mi
+    javaOpts: "-Xms2048m -Xmx2048m"
+```
+
+## 存储类
+```yaml
+    storageClass: "cbs-high-csi-retain"
+      accessModes:
+        - ReadWriteOnce
+      size: 200Gi
+```
+
+## 安装
+```bash
+helm3 install -n <your-want-namespace> <your-want-release-name> .
+```
+
 ## 应用Security配置
 ```bash
 chmod u+x /usr/share/elasticsearch/plugins/opendistro_security/tools/securityadmin.sh && \
@@ -35,6 +73,12 @@ opendistro-perf-top-linux --endpoint 172.16.5.57 --dashboard NodeAnalysis --node
 opendistro-perf-top-linux --endpoint 172.16.5.57 --dashboard NodeAnalysis --nodename pacheck-opendistro-es-master-1
 opendistro-perf-top-linux --endpoint 172.16.5.57 --dashboard NodeAnalysis --nodename pacheck-opendistro-es-master-2
 ```
+
+---
+
+↓↓↓ don't care! ↓↓↓
+
+---
 
 ## TL;DR
 ```
