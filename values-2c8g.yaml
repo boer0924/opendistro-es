@@ -12,7 +12,7 @@
 # permissions and limitations under the License.
 
 kibana:
-  enabled: false
+  enabled: true
   image: 3rdparty/opendistro-for-elasticsearch-kibana
   imageTag: 1.13.2
   ## Specifies the image pull policy. Can be "Always" or "IfNotPresent" or "Never".
@@ -22,13 +22,13 @@ kibana:
   port: 5601
   # externalPort: 443
   externalPort: 5601
-  resources: {}
-  #  limits:
-  #    cpu: 2500m
-  #    memory: 2Gi
-  #  requests:
-  #    cpu: 500m
-  #    memory: 512Mi
+  resources:
+    limits:
+      cpu: 1
+      memory: 1Gi
+    requests:
+      cpu: 1
+      memory: 1Gi
   readinessProbe: []
   livenessProbe: []
   startupProbe: []
@@ -481,17 +481,17 @@ elasticsearch:
       storageClass: "cbs-high-csi-retain"
       accessModes:
         - ReadWriteOnce
-      size: 200Gi
+      size: 500Gi
       annotations: {}
 
     resources:
       limits:
         cpu: 2
-        memory: 4096Mi
+        memory: 8Gi
       requests:
         cpu: 2
-        memory: 4096Mi
-    javaOpts: "-Xms2048m -Xmx2048m"
+        memory: 8Gi
+    javaOpts: "-Xms4096m -Xmx4096m"
     podDisruptionBudget:
       enabled: false
       minAvailable: 1

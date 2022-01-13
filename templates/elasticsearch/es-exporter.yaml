@@ -12,6 +12,7 @@ spec:
   selector:
 {{ include "opendistro-es.labels.selector" . | indent 4 }}
     role: exporter
+    app: opendistro-es-exporter
   ports:
     - protocol: TCP
       port: 9114

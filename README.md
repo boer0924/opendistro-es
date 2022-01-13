@@ -55,6 +55,12 @@ imageRegistry: y2-harbor.boer.xyz:31104
 helm3 install -n <your-want-namespace> <your-want-release-name> .
 ```
 
+---
+
+↓↓↓ don't care! ↓↓↓
+
+---
+
 ## 应用Security配置
 ```bash
 chmod u+x /usr/share/elasticsearch/plugins/opendistro_security/tools/securityadmin.sh && \
@@ -73,12 +79,6 @@ opendistro-perf-top-linux --endpoint 172.16.5.57 --dashboard NodeAnalysis --node
 opendistro-perf-top-linux --endpoint 172.16.5.57 --dashboard NodeAnalysis --nodename pacheck-opendistro-es-master-1
 opendistro-perf-top-linux --endpoint 172.16.5.57 --dashboard NodeAnalysis --nodename pacheck-opendistro-es-master-2
 ```
-
----
-
-↓↓↓ don't care! ↓↓↓
-
----
 
 ## TL;DR
 ```
